@@ -23,8 +23,11 @@ function validateAppData(data) {
   if (
     !data ||
     typeof data !== "object" ||
+    Array.isArray(data) ||
     data.schemaVersion !== 1 ||
     !data.settings ||
+    typeof data.settings !== "object" ||
+    Array.isArray(data.settings) ||
     typeof data.logsByDate !== "object" ||
     data.logsByDate === null ||
     Array.isArray(data.logsByDate)
@@ -115,4 +118,12 @@ export function deleteDayLog(date) {
 
 export function clearAppData() {
   localStorage.removeItem(STORAGE_KEY);
+}
+
+export function getRawStoredData() {
+  try {
+    return localStorage.getItem(STORAGE_KEY);
+  } catch {
+    return null;
+  }
 }
