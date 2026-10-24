@@ -1,6 +1,13 @@
 /**
+ * Saheli safety-rule definitions.
  * Red-flag rules inferred from daily log data.
- * Each rule references translation keys for its displayed text.
+ *
+ * Thresholds belong in src/config.js.
+ * User-facing wording belongs in src/i18n and translations.js.
+ * Evaluation logic belongs in src/lib/safety.js.
+ *
+ * The trigger identifiers below are contracts for the evaluator;
+ * they are not executable rules by themselves.
  */
 export const RED_FLAG_RULES = [
   {

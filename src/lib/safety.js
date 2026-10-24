@@ -472,5 +472,4 @@ export function evaluateSafety(
     needsAgeGroupSelection: thresholds === null,
   };
 }
-
 export { evaluateSafety as evaluateHealthSafety };
