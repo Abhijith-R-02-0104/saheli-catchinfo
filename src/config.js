@@ -5,7 +5,7 @@ export const APP_CONFIG = {
 
     // Three distinct period start dates allow an initial estimate.
     // Require three completed intervals between period start dates.
-    minimumCompleteCyclesForPrediction: 3,
+    minimumPeriodStartsForPrediction: 3,
 
     // A variation greater than seven days marks the cycle as irregular.
     irregularVariationThresholdDays: 7,
