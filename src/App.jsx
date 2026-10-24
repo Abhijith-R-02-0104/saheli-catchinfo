@@ -10,7 +10,7 @@ function getLocalDateString() {
 }
 
 export default function App() {
-  const { appData, updateDayLog, deleteDayLog } = useAppData();
+  const { appData, updateDayLog, deleteDayLog, storageError } = useAppData();
 
   const today = getLocalDateString();
   const todayLog = appData.logsByDate[today] ?? null;
@@ -73,9 +73,20 @@ export default function App() {
         </div>
 
         <div className="mt-8">
-          <h2 className="text-lg font-bold">
-            {todayLog ? "Saved log found" : "No log saved for today"}
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold">
+              {storageError
+                ? "Log in memory only (Storage write failed)"
+                : todayLog
+                ? "Saved log found"
+                : "No log saved for today"}
+            </h2>
+            {storageError && (
+              <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
+                Not saved to storage
+              </span>
+            )}
+          </div>
 
           <pre className="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-sm text-green-200">
             {JSON.stringify(todayLog, null, 2) ?? "No saved log"}
