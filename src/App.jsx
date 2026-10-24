@@ -1,104 +1,100 @@
-import { useAppData } from "./context/useAppData.js";
+import { useState, lazy, Suspense } from "react";
+import { useLocation, useNavigate, Routes, Route, Navigate } from "react-router-dom";
+import { Layout } from "./components/layout/Layout.jsx";
+import { TodayView } from "./components/views/TodayView.jsx";
+import { LogView } from "./components/views/LogView.jsx";
+import { CalendarView } from "./components/views/CalendarView.jsx";
+import { InsightsView } from "./components/views/InsightsView.jsx";
+import { DoctorView } from "./components/views/DoctorView.jsx";
+import { LearnView } from "./components/views/LearnView.jsx";
+import { AskView } from "./components/views/AskView.jsx";
+import { SettingsView } from "./components/views/SettingsView.jsx";
+import { CalculatorsView } from "./components/views/CalculatorsView.jsx";
+import { MySpaceView } from "./components/views/MySpaceView.jsx";
 
-function getLocalDateString() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-}
+const PetView = lazy(() =>
+  import("./components/views/PetView.jsx").then((m) => ({ default: m.PetView })),
+);
 
 export default function App() {
-  const { appData, updateDayLog, deleteDayLog, storageError } = useAppData();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [selectedDateForLog, setSelectedDateForLog] = useState(null);
 
-  const today = getLocalDateString();
-  const todayLog = appData.logsByDate[today] ?? null;
+  // Derive active tab from current pathname
+  const currentPath = location.pathname.replace(/^\//, "") || "today";
+  const validTabs = [
+    "today",
+    "log",
+    "calendar",
+    "insights",
+    "calculators",
+    "myspace",
+    "doctor",
+    "learn",
+    "ask",
+    "pet",
+    "settings",
+  ];
+  const activeTab = validTabs.includes(currentPath) ? currentPath : "today";
 
-  function handleSave() {
-    updateDayLog(today, {
-      period: {
-        isPeriod: true,
-        flow: "medium",
-      },
-      pain: {
-        level: 2,
-        stopsDailyLife: false,
-      },
-      symptoms: ["cramps"],
-      mood: "okay",
-      energy: 3,
-      sleepHours: 7,
-      medicines: [],
-      privateNote: "",
-    });
+  function handleSelectTab(tabId) {
+    const targetPath = tabId === "today" ? "/" : `/${tabId}`;
+    navigate(targetPath);
+  }
+
+  function handleCalendarSelectDate(date) {
+    setSelectedDateForLog(date);
+    navigate("/log");
   }
 
   return (
-    <main className="min-h-screen bg-[#F6F8F7] px-4 py-10 text-slate-900">
-      <section className="mx-auto max-w-xl rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200 sm:p-8">
-        <p className="text-sm font-semibold uppercase tracking-widest text-green-700">
-          Saheli · Development Test
-        </p>
-
-        <h1 className="mt-3 text-3xl font-bold">Repository integration</h1>
-
-        <p className="mt-3 text-slate-600">
-          Test saving a period log through React Context and localStorage.
-        </p>
-
-        <div className="mt-6 rounded-xl bg-slate-50 p-4">
-          <p className="text-sm text-slate-500">Today's local date</p>
-          <p className="mt-1 font-semibold">{today}</p>
-        </div>
-
-        <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
-            onClick={handleSave}
-            className="min-h-12 rounded-xl bg-green-700 px-5 py-3 font-semibold text-white hover:bg-green-800 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-700"
-          >
-            Save sample period log
-          </button>
-
-          {todayLog && (
-            <button
-              type="button"
-              onClick={() => deleteDayLog(today)}
-              className="min-h-12 rounded-xl border border-slate-300 px-5 py-3 font-semibold hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-700"
+    <Layout activeTab={activeTab} onSelectTab={handleSelectTab}>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <TodayView
+              onNavigateToLog={() => handleSelectTab("log")}
+              onNavigateToTab={handleSelectTab}
+            />
+          }
+        />
+        <Route path="/today" element={<Navigate to="/" replace />} />
+        <Route
+          path="/log"
+          element={<LogView initialDate={selectedDateForLog} />}
+        />
+        <Route
+          path="/calendar"
+          element={
+            <CalendarView onSelectDateForLog={handleCalendarSelectDate} />
+          }
+        />
+        <Route path="/insights" element={<InsightsView />} />
+        <Route path="/calculators" element={<CalculatorsView />} />
+        <Route path="/myspace" element={<MySpaceView />} />
+        <Route path="/doctor" element={<DoctorView />} />
+        <Route path="/learn" element={<LearnView />} />
+        <Route path="/ask" element={<AskView />} />
+        <Route
+          path="/pet"
+          element={
+            <Suspense
+              fallback={
+                <div className="py-20 text-center text-[#79516F] font-serif animate-pulse">
+                  Loading your companion sanctuary...
+                </div>
+              }
             >
-              Delete today's test log
-            </button>
-          )}
-        </div>
-
-        <div className="mt-8">
-          <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold">
-              {storageError
-                ? "Log in memory only (Storage write failed)"
-                : todayLog
-                  ? "Saved log found"
-                  : "No log saved for today"}
-            </h2>
-            {storageError && (
-              <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
-                Not saved to storage
-              </span>
-            )}
-          </div>
-
-          <pre className="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-sm text-green-200">
-            {todayLog
-              ? JSON.stringify(todayLog, null, 2)
-              : "No saved log"}
-          </pre>
-        </div>
-
-        <p className="mt-5 text-sm text-slate-500">
-          Development test only. Do not enter real health information here.
-        </p>
-      </section>
-    </main>
+              <PetView />
+            </Suspense>
+          }
+        />
+        <Route path="/settings" element={<SettingsView />} />
+        {/* Fallback to Today */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Layout>
   );
 }

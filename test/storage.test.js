@@ -45,6 +45,7 @@ globalThis.localStorage = createMockStorage();
 const initial = repo.loadAppData();
 assert(initial.schemaVersion === 1, 'Default schemaVersion is 1');
 assert(initial.settings.language === 'en', 'Default language is English');
+assert(initial.settings.theme === 'light', 'Default theme is light');
 assert(initial.settings.textSize === 'normal', 'Default textSize is normal');
 assert(typeof initial.logsByDate === 'object' && !Array.isArray(initial.logsByDate), 'logsByDate is a clean dictionary');
 assert(Object.keys(initial.logsByDate).length === 0, 'Initial logsByDate is empty');

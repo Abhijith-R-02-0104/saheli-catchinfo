@@ -3,8 +3,34 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <title>saheli</title>
+    <script>
+      (function() {
+        try {
+          var raw = localStorage.getItem("saheli.appData.v1");
+          var theme = "light";
+          var highContrast = false;
+          var textSize = "normal";
+          if (raw) {
+            var data = JSON.parse(raw);
+            if (data && data.settings) {
+              if (data.settings.theme === "dark" || (data.settings.theme === "system" && window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+                theme = "dark";
+              }
+              if (data.settings.highContrast) highContrast = true;
+              if (data.settings.textSize) textSize = data.settings.textSize;
+            }
+          }
+          document.documentElement.setAttribute("data-theme", theme);
+          if (theme === "dark") document.documentElement.classList.add("dark");
+          document.documentElement.setAttribute("data-contrast", highContrast ? "high" : "normal");
+          document.documentElement.setAttribute("data-text-size", textSize);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

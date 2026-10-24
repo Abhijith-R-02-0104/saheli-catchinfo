@@ -1,1 +1,397 @@
 @import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
+
+@theme {
+  --color-warm-ivory: #FBF7F3;
+  --color-blush-pink: #E9B7C8;
+  --color-muted-plum: #79516F;
+  --color-pale-sage: #DCEBDD;
+  --color-soft-white: #FFFFFF;
+  --color-soft-charcoal: #292536;
+
+  --color-saheli-bg: var(--bg);
+  --color-saheli-card: var(--card);
+  --color-saheli-card-subtle: var(--card-subtle);
+  --color-saheli-ink: var(--ink);
+  --color-saheli-muted: var(--muted);
+  --color-saheli-blush: var(--blush);
+  --color-saheli-blush-light: var(--blush-light);
+  --color-saheli-plum: var(--plum);
+  --color-saheli-plum-hover: var(--plum-hover);
+  --color-saheli-plum-light: var(--plum-light);
+  --color-saheli-sage: var(--sage);
+  --color-saheli-sage-dark: var(--sage-dark);
+  --color-saheli-border: var(--line);
+  --color-saheli-border-strong: var(--line-strong);
+
+  --font-serif: "Lora", "Charter", "Georgia", "Cambria", serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+:root {
+  /* Saheli Primary Palette */
+  --bg: #FBF7F3;          /* Warm Ivory */
+  --card: #FFFFFF;        /* Soft White */
+  --card-subtle: #FAF5F0; /* Warm off-white */
+  --ink: #292536;         /* Soft Charcoal */
+  --muted: #6B6577;       /* Muted Charcoal */
+  --blush: #E9B7C8;       /* Blush Pink */
+  --blush-light: #F7E3EC; /* Light Blush */
+  --blush-tint: #FCF4F7;  /* Delicate Blush tint */
+  --plum: #79516F;        /* Muted Plum */
+  --plum-hover: #633E5A;  /* Deep Plum */
+  --plum-light: #F2E8F0;  /* Pastel Plum */
+  --sage: #DCEBDD;        /* Pale Sage */
+  --sage-dark: #3F6344;   /* Deep Sage for text readability */
+  --line: #EFE6EC;        /* Subtle Border */
+  --line-strong: #DECED9; /* Definite Border */
+
+  /* Semantic Notice Colors */
+  --warn-bg: #FFF8EB;
+  --warn-ink: #854D0E;
+  --warn-line: #F59E0B;
+  --urgent-bg: #FDF2F0;
+  --urgent-ink: #8F1D1D;
+  --urgent-line: #F4B8B0;
+
+  /* Focus & Geometry */
+  --focus-ring: #79516F;
+  --radius-lg: 24px;
+  --radius-md: 18px;
+  --radius-sm: 12px;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 8px rgba(41, 37, 54, 0.04);
+  --shadow-md: 0 6px 20px rgba(41, 37, 54, 0.05);
+
+  /* Typography */
+  --font-serif: "Lora", "Charter", "Georgia", "Cambria", serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --font-scale: 16px;
+}
+
+/* Accessible High Contrast Overrides (Light Theme) */
+[data-contrast="high"]:not([data-theme="dark"]),
+[data-high-contrast="true"]:not([data-theme="dark"]),
+[data-contrast="true"]:not([data-theme="dark"]) {
+  --bg: #FFFFFF;
+  --card: #FFFFFF;
+  --card-subtle: #F5F5F5;
+  --ink: #000000;
+  --muted: #222222;
+  --blush: #CCCCCC;
+  --blush-light: #E0E0E0;
+  --blush-tint: #EEEEEE;
+  --plum: #000000;
+  --plum-hover: #222222;
+  --plum-light: #E5E5E5;
+  --sage: #DDDDDD;
+  --sage-dark: #000000;
+  --line: #000000;
+  --line-strong: #000000;
+  --warn-bg: #FFFBE6;
+  --warn-ink: #000000;
+  --warn-line: #000000;
+  --urgent-bg: #FFF0F0;
+  --urgent-ink: #800000;
+  --urgent-line: #FF0000;
+  --focus-ring: #0033AA;
+}
+
+/* Functional Dark Theme Overrides */
+[data-theme="dark"],
+.dark,
+:root[data-theme="dark"] {
+  --bg: #1B1522;          /* Deep plum-charcoal background */
+  --card: #281F30;        /* Distinguishable deep plum card */
+  --card-subtle: #211928; /* Subtle dark card surface */
+  --ink: #F7EDF5;         /* Soft luminous pearl text */
+  --muted: #BBA9BE;       /* Accessible muted lavender-gray */
+  --blush: #E8A8BF;       /* Soft blush accent */
+  --blush-light: #3D2636;
+  --blush-tint: #2C1B27;
+  --plum: #D9A4C7;        /* Readable high-contrast plum */
+  --plum-hover: #EABBD9;
+  --plum-light: #3A2538;
+  --sage: #A2C8A5;        /* Soft sage */
+  --sage-dark: #C4E2C7;
+  --line: #3D2E47;        /* Soft card borders */
+  --line-strong: #543F61; /* Pronounced borders */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md: 0 6px 20px rgba(0, 0, 0, 0.45);
+  --focus-ring: #E8A8BF;
+}
+
+/* Accessible High Contrast within Dark Theme */
+[data-theme="dark"][data-contrast="high"],
+.dark[data-contrast="high"],
+[data-theme="dark"][data-high-contrast="true"],
+.dark[data-high-contrast="true"] {
+  --bg: #000000;
+  --card: #0A0A0A;
+  --card-subtle: #141414;
+  --ink: #FFFFFF;
+  --muted: #E0E0E0;
+  --blush: #FFFFFF;
+  --blush-light: #2A2A2A;
+  --plum: #FFFFFF;
+  --plum-hover: #CCCCCC;
+  --plum-light: #2A2A2A;
+  --line: #FFFFFF;
+  --line-strong: #FFFFFF;
+  --focus-ring: #FFFF00;
+}
+
+/* Palette utility mapping for dark theme */
+[data-theme="dark"] .bg-\[\#FBF7F3\],
+.dark .bg-\[\#FBF7F3\] {
+  background-color: var(--bg) !important;
+}
+
+[data-theme="dark"] .bg-white,
+.dark .bg-white {
+  background-color: var(--card) !important;
+}
+
+[data-theme="dark"] .bg-\[\#FAF5F0\],
+.dark .bg-\[\#FAF5F0\] {
+  background-color: var(--card-subtle) !important;
+}
+
+[data-theme="dark"] .bg-\[\#F2E8F0\],
+.dark .bg-\[\#F2E8F0\] {
+  background-color: var(--plum-light) !important;
+}
+
+[data-theme="dark"] .bg-\[\#FFFFFF\]\/90,
+.dark .bg-\[\#FFFFFF\]\/90,
+[data-theme="dark"] .bg-white\/95,
+.dark .bg-white\/95,
+[data-theme="dark"] .bg-white\/80,
+.dark .bg-white\/80 {
+  background-color: rgba(40, 31, 48, 0.94) !important;
+}
+
+[data-theme="dark"] .text-\[\#292536\],
+.dark .text-\[\#292536\] {
+  color: var(--ink) !important;
+}
+
+[data-theme="dark"] .text-\[\#6B6577\],
+.dark .text-\[\#6B6577\] {
+  color: var(--muted) !important;
+}
+
+[data-theme="dark"] .text-\[\#79516F\],
+.dark .text-\[\#79516F\] {
+  color: var(--plum) !important;
+}
+
+[data-theme="dark"] .border-\[\#EFE6EC\],
+.dark .border-\[\#EFE6EC\] {
+  border-color: var(--line) !important;
+}
+
+[data-theme="dark"] .border-\[\#DECED9\],
+.dark .border-\[\#DECED9\] {
+  border-color: var(--line-strong) !important;
+}
+
+[data-theme="dark"] .hover\:bg-\[\#F2E8F0\]:hover,
+.dark .hover\:bg-\[\#F2E8F0\]:hover {
+  background-color: #38283B !important;
+}
+
+[data-theme="dark"] .hover\:bg-\[\#FAF5F0\]:hover,
+.dark .hover\:bg-\[\#FAF5F0\]:hover {
+  background-color: #2D2235 !important;
+}
+
+[data-theme="dark"] .bg-\[\#79516F\],
+.dark .bg-\[\#79516F\] {
+  background-color: #8D5C82 !important;
+  color: #FFFFFF !important;
+}
+
+[data-theme="dark"] .hover\:bg-\[\#633E5A\]:hover,
+.dark .hover\:bg-\[\#633E5A\]:hover {
+  background-color: #A06B95 !important;
+}
+
+[data-theme="dark"] .border-\[\#79516F\],
+.dark .border-\[\#79516F\] {
+  border-color: #B584A9 !important;
+}
+
+[data-theme="dark"] .bg-\[\#DCEBDD\],
+.dark .bg-\[\#DCEBDD\] {
+  background-color: #1E3322 !important;
+  color: #C4E2C7 !important;
+}
+
+[data-theme="dark"] .text-\[\#3F6344\],
+.dark .text-\[\#3F6344\] {
+  color: #A2C8A5 !important;
+}
+
+[data-theme="dark"] .border-\[\#3F6344\],
+.dark .border-\[\#3F6344\] {
+  border-color: #5B8761 !important;
+}
+
+[data-theme="dark"] .bg-\[\#FCF4F7\],
+.dark .bg-\[\#FCF4F7\] {
+  background-color: #2F1E2E !important;
+}
+
+[data-theme="dark"] .bg-\[\#FFF5F8\],
+.dark .bg-\[\#FFF5F8\] {
+  background-color: #342131 !important;
+}
+
+[data-theme="dark"] .border-\[\#F3EBF0\],
+.dark .border-\[\#F3EBF0\] {
+  border-color: #3B2A42 !important;
+}
+
+[data-theme="dark"] .border-\[\#E9B7C8\],
+.dark .border-\[\#E9B7C8\] {
+  border-color: #7A4B67 !important;
+}
+
+[data-theme="dark"] .bg-\[\#FFF8EB\],
+.dark .bg-\[\#FFF8EB\] {
+  background-color: #2E2412 !important;
+}
+
+[data-theme="dark"] .text-\[\#854D0E\],
+.dark .text-\[\#854D0E\] {
+  color: #FCD34D !important;
+}
+
+[data-theme="dark"] .border-\[\#F59E0B\],
+.dark .border-\[\#F59E0B\] {
+  border-color: #B45309 !important;
+}
+
+[data-theme="dark"] .bg-\[\#F7E3EC\],
+.dark .bg-\[\#F7E3EC\] {
+  background-color: #3C2333 !important;
+}
+
+[data-theme="dark"] .bg-\[\#FDF2F0\],
+.dark .bg-\[\#FDF2F0\] {
+  background-color: #331518 !important;
+}
+
+[data-theme="dark"] .border-\[\#F4B8B0\],
+.dark .border-\[\#F4B8B0\] {
+  border-color: #6B2329 !important;
+}
+
+[data-theme="dark"] .text-\[\#8F1D1D\],
+.dark .text-\[\#8F1D1D\] {
+  color: #FCA5A5 !important;
+}
+
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select,
+.dark input,
+.dark textarea,
+.dark select {
+  background-color: var(--card) !important;
+  color: var(--ink) !important;
+  border-color: var(--line-strong) !important;
+}
+
+/* Accessible Font Sizing - scales rem-based Tailwind sizes app-wide */
+html[data-text-size="normal"],
+:root[data-text-size="normal"],
+[data-text-size="normal"] {
+  font-size: 16px !important;
+  --font-scale: 16px;
+}
+
+html[data-text-size="large"],
+:root[data-text-size="large"],
+[data-text-size="large"] {
+  font-size: 18px !important;
+  --font-scale: 18px;
+}
+
+/* High Contrast Mode Visual Enhancements */
+[data-contrast="high"] .bg-gradient-to-br,
+[data-contrast="high"] .bg-gradient-to-r,
+[data-contrast="high"] .bg-gradient-to-b {
+  background-image: none !important;
+  background-color: var(--card) !important;
+}
+
+[data-contrast="high"] .border,
+[data-contrast="high"] [class*="border-"] {
+  border-color: var(--line) !important;
+}
+
+[data-contrast="high"] button,
+[data-contrast="high"] [role="button"],
+[data-contrast="high"] input,
+[data-contrast="high"] select,
+[data-contrast="high"] textarea {
+  border-color: var(--line) !important;
+}
+
+/* Reduced Motion Preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: var(--font-scale);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Heading Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+/* Form & Interactive Accessibility */
+button,
+a,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Touch Target Minimums (min 48px for comfortable mobile use) */
+.touch-target {
+  min-height: 48px;
+  min-width: 48px;
+}
