@@ -78,8 +78,8 @@ export default function App() {
               {storageError
                 ? "Log in memory only (Storage write failed)"
                 : todayLog
-                ? "Saved log found"
-                : "No log saved for today"}
+                  ? "Saved log found"
+                  : "No log saved for today"}
             </h2>
             {storageError && (
               <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
@@ -89,7 +89,9 @@ export default function App() {
           </div>
 
           <pre className="mt-3 overflow-x-auto rounded-xl bg-slate-900 p-4 text-sm text-green-200">
-            {JSON.stringify(todayLog, null, 2) ?? "No saved log"}
+            {todayLog
+              ? JSON.stringify(todayLog, null, 2)
+              : "No saved log"}
           </pre>
         </div>
 
