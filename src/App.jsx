@@ -2,6 +2,7 @@ import { useState, lazy, Suspense } from "react";
 import { useLocation, useNavigate, Routes, Route, Navigate } from "react-router-dom";
 import { useAppData } from "./context/useAppData.js";
 import FaqAssistant from "./components/FaqAssistant.jsx";
+import { LandingPage } from "./components/landing/LandingPage.jsx";
 import { Layout } from "./components/layout/Layout.jsx";
 import { TodayView } from "./components/views/TodayView.jsx";
 import { LogView } from "./components/views/LogView.jsx";
@@ -70,7 +71,11 @@ export default function App() {
   const activeTab = validTabs.includes(currentPath) ? currentPath : "today";
 
   function handleSelectTab(tabId) {
-    const targetPath = tabId === "today" ? "/" : `/${tabId}`;
+    if (tabId === "overview") {
+      navigate("/");
+      return;
+    }
+    const targetPath = tabId === "today" ? "/today" : `/${tabId}`;
     navigate(targetPath);
   }
 
@@ -79,11 +84,29 @@ export default function App() {
     navigate("/log");
   }
 
+  // Public Landing Page view at "/"
+  if (location.pathname === "/") {
+    return (
+      <LandingPage
+        onOpenApp={(targetTab = "today") => {
+          navigate(targetTab === "today" ? "/today" : `/${targetTab}`);
+        }}
+      />
+    );
+  }
+
   return (
-    <Layout activeTab={activeTab} onSelectTab={handleSelectTab}>
+    <Layout
+      activeTab={activeTab}
+      onSelectTab={handleSelectTab}
+      onNavigateToLanding={() => navigate("/")}
+    >
       <Routes>
+        <Route path="/app" element={<Navigate to="/today" replace />} />
+        <Route path="/app/today" element={<Navigate to="/today" replace />} />
+        <Route path="/overview" element={<Navigate to="/" replace />} />
         <Route
-          path="/"
+          path="/today"
           element={
             <TodayView
               onNavigateToLog={() => handleSelectTab("log")}
@@ -91,7 +114,6 @@ export default function App() {
             />
           }
         />
-        <Route path="/today" element={<Navigate to="/" replace />} />
         <Route
           path="/log"
           element={<LogView initialDate={selectedDateForLog} />}
@@ -133,7 +155,7 @@ export default function App() {
           }
         />
         <Route path="/settings" element={<SettingsView />} />
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to="/today" replace />} />
       </Routes>
 
       {/* Developer Storage Check (Preserved from origin/main) */}
