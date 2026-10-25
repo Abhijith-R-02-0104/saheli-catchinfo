@@ -23,8 +23,6 @@ export const APP_CONFIG = {
     // Ask whether a period was missed when a gap exceeds the usual
     // cycle length by this multiplier.
     missedLogGapMultiplier: 1.5,
-    
-        
     padChangeIntervalHours: 2,
   },
 

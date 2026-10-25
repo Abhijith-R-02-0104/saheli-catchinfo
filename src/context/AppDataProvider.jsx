@@ -12,6 +12,7 @@ import {
 } from "../repositories/appRepository.js";
 
 import { createDefaultAppData } from "../data/defaultAppData.js";
+import { IconAlertTriangle } from "../components/common/Icons.jsx";
 
 export function AppDataProvider({ children }) {
   const [initError, setInitError] = useState(() => {
@@ -127,6 +128,82 @@ export function AppDataProvider({ children }) {
     }
   }
 
+  function updatePersonalNotes(notes) {
+    try {
+      const current = loadAppData();
+      const nextData = {
+        ...current,
+        personalNotes: notes,
+      };
+      saveAppData(nextData);
+      setStorageError(null);
+      setAppData(nextData);
+      return { success: true };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setStorageError(`Failed to save notes: ${message}`);
+      setAppData((prev) => ({ ...prev, personalNotes: notes }));
+      return { success: false, error };
+    }
+  }
+
+  function updateFutureLetters(letters) {
+    try {
+      const current = loadAppData();
+      const nextData = {
+        ...current,
+        futureLetters: letters,
+      };
+      saveAppData(nextData);
+      setStorageError(null);
+      setAppData(nextData);
+      return { success: true };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setStorageError(`Failed to save letters: ${message}`);
+      setAppData((prev) => ({ ...prev, futureLetters: letters }));
+      return { success: false, error };
+    }
+  }
+
+  function updatePetState(patch) {
+    try {
+      const current = loadAppData();
+      const nextData = {
+        ...current,
+        petState: {
+          ...(current.petState || {}),
+          ...patch,
+        },
+      };
+      saveAppData(nextData);
+      setStorageError(null);
+      setAppData(nextData);
+      return { success: true };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setStorageError(`Failed to save pet state: ${message}`);
+      setAppData((prev) => ({
+        ...prev,
+        petState: { ...(prev.petState || {}), ...patch },
+      }));
+      return { success: false, error };
+    }
+  }
+
+  function importAppData(importedData) {
+    try {
+      saveAppData(importedData);
+      setStorageError(null);
+      setAppData(importedData);
+      return { success: true };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setStorageError(`Failed to import data: ${message}`);
+      return { success: false, error };
+    }
+  }
+
   function clearStorageError() {
     setStorageError(null);
   }
@@ -156,21 +233,21 @@ export function AppDataProvider({ children }) {
     const rawData = getRawStoredData() ?? "No raw data found in storage.";
 
     return (
-      <main className="min-h-screen bg-[#FBF7F3] px-4 py-12 text-[#292536] font-sans">
+      <main className="min-h-screen bg-[var(--bg)] px-4 py-12 text-[var(--ink)] font-sans">
         <section
           role="alertdialog"
           aria-labelledby="recovery-title"
           aria-describedby="recovery-desc"
-          className="mx-auto max-w-xl rounded-3xl bg-white p-6 shadow-md ring-1 ring-[#DECED9] sm:p-8"
+          className="mx-auto max-w-xl rounded-3xl bg-[var(--card)] p-6 shadow-md ring-1 ring-[var(--line-strong)] sm:p-8"
         >
-          <div className="flex items-center gap-3 text-[#8F1D1D]">
-            <span aria-hidden="true" className="text-2xl">⚠️</span>
-            <p className="text-xs font-bold uppercase tracking-widest text-[#8F1D1D]">
+          <div className="flex items-center gap-3 text-[#8F1D1D] dark:text-[#FFB3B8]">
+            <IconAlertTriangle className="h-6 w-6 shrink-0" aria-hidden="true" />
+            <p className="text-xs font-bold uppercase tracking-widest text-[#8F1D1D] dark:text-[#FFB3B8]">
               Saheli · Data Recovery
             </p>
           </div>
 
-          <h1 id="recovery-title" className="mt-3 text-2xl font-bold text-[#292536]">
+          <h1 id="recovery-title" className="mt-3 text-2xl font-bold text-[var(--ink)]">
             Unable to read saved data
           </h1>
 
@@ -269,6 +346,10 @@ export function AppDataProvider({ children }) {
     updateDayLog,
     deleteDayLog,
     updateSettings,
+    updatePersonalNotes,
+    updateFutureLetters,
+    updatePetState,
+    importAppData,
     resetData,
     storageError,
     clearStorageError,
@@ -284,7 +365,7 @@ export function AppDataProvider({ children }) {
           className="sticky top-0 z-50 flex items-center justify-between gap-4 border-b border-amber-300 bg-amber-50 px-4 py-3 text-amber-900 shadow-sm"
         >
           <div className="flex items-center gap-2">
-            <span aria-hidden="true" className="text-lg">⚠️</span>
+            <IconAlertTriangle className="h-5 w-5 text-amber-700 shrink-0" aria-hidden="true" />
             <p className="text-sm font-medium">
               <strong className="font-semibold">Storage warning:</strong> {storageError}
             </p>

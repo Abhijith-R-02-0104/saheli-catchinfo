@@ -1,14 +1,14 @@
 /**
  * Saheli safety-rule definitions.
+ * Red-flag rules inferred from daily log data.
  *
  * Thresholds belong in src/config.js.
- * User-facing wording belongs in src/i18n.
+ * User-facing wording belongs in src/i18n and translations.js.
  * Evaluation logic belongs in src/lib/safety.js.
  *
  * The trigger identifiers below are contracts for the evaluator;
  * they are not executable rules by themselves.
  */
-
 export const RED_FLAG_RULES = [
   {
     id: "prolonged-period",
@@ -31,10 +31,7 @@ export const RED_FLAG_RULES = [
   {
     id: "heavy-bleeding-indicators",
     trigger: "heavy-flow-indicators",
-    thresholdConfigKeys: [
-      "health.padChangeIntervalHours",
-      
-    ],
+    thresholdConfigKeys: ["health.padChangeIntervalHours"],
     severity: "doctor",
     titleKey: "redflags.heavyBleeding.title",
     noticedKey: "redflags.heavyBleeding.noticed",
