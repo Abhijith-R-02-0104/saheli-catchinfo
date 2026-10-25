@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "../../hooks/useTranslation.js";
 import { CYCLE_PHASES } from "../../data/cyclePhases.js";
-import { IconLotus, IconLog } from "../common/Icons.jsx";
+import { IconSaheliHeart, IconLog } from "../common/Icons.jsx";
 
 export function CycleWheel({
   currentCycleDay,
@@ -205,7 +205,7 @@ export function CycleWheel({
             </div>
           ) : (
             <div className="space-y-2">
-              <IconLotus className="h-7 w-7 mx-auto text-[#79516F] dark:text-[#E8A8BF]" />
+              <IconSaheliHeart className="h-7 w-7 mx-auto text-[#79516F] dark:text-[#E8A8BF]" />
               <p className="font-serif text-sm font-bold text-[#292536] dark:text-[#F7EDF5]">
                 {t("common", "appName")}
               </p>
@@ -292,7 +292,7 @@ export function CycleWheel({
         </p>
 
         <div className="mt-3 flex items-start gap-2.5 rounded-xl bg-[var(--card)] p-2.5 text-xs text-[var(--ink)] border border-[var(--line)]">
-          <IconLotus className="h-4 w-4 shrink-0 text-[var(--plum)] mt-0.5" />
+          <IconSaheliHeart className="h-4 w-4 shrink-0 text-[var(--plum)] mt-0.5" />
           <p>
             <strong className="font-semibold text-[var(--plum)]">
               {lang === "hi" ? "सुझाव:" : "Gentle care:"}

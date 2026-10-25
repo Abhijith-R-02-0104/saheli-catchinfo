@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 60" fill="none">
+  <!-- Symbol Left -->
+  <g transform="translate(10, 6) scale(0.48)">
+    <rect width="100" height="100" rx="26" fill="#F7E3EC"/>
+    <path d="M50 20C41 12 28 15 23 25C17 37 22 53 34 66C41 73 47 79 50 82C53 79 59 73 66 66C78 53 83 37 77 25C72 15 59 12 50 20Z" stroke="#79516F" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="#FAF5F0"/>
+    <path d="M48 27C44 32 44 37 46 41C47.5 44 49 45 47 48C45.5 50 43 51 44 54C45.5 58 50 60 52 64" stroke="#E9B7C8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M52 27C58 31 62 38 61 46C60 54 55 60 50 67" stroke="#79516F" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="50" cy="40" r="3" fill="#E9B7C8"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="72" y="38" font-family="Lora, serif" font-size="28" font-weight="700" fill="#292536" letter-spacing="-0.5">saheli</text>
+  <text x="73" y="50" font-family="Plus Jakarta Sans, sans-serif" font-size="9" font-weight="500" fill="#79516F" letter-spacing="0.5">YOUR PRIVATE HEALTH COMPANION</text>
+</svg>

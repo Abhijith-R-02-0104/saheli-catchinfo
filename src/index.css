@@ -358,8 +358,10 @@ html[data-text-size="large"],
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
+  overflow-x: hidden;
   background-color: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
@@ -385,6 +387,36 @@ textarea {
   font-family: inherit;
 }
 
+/* Accessible Interactive Pointer Standards */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[role="tab"]:not([aria-disabled="true"]),
+a[href],
+label:has(input:not(:disabled)),
+select:not(:disabled),
+summary {
+  cursor: pointer;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"],
+[role="tab"][aria-disabled="true"],
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+textarea {
+  cursor: text;
+}
+
+
 :focus-visible {
   outline: 2px solid var(--focus-ring);
   outline-offset: 2px;
@@ -394,4 +426,33 @@ textarea {
 .touch-target {
   min-height: 48px;
   min-width: 48px;
+}
+
+/* Landing Page Hero Artwork Positioning */
+.hero-artwork-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  transform-origin: center 20%;
+  user-select: none;
+  pointer-events: none;
+}
+
+@media (min-width: 1024px) {
+  .hero-artwork-img {
+    transform: translateX(-14%) scale(1.08);
+  }
+}
+
+@media (min-width: 1200px) {
+  .hero-artwork-img {
+    transform: translateX(-10%) scale(1.08);
+  }
+}
+
+@media (min-width: 1400px) {
+  .hero-artwork-img {
+    transform: translateX(-7%) scale(1.08);
+  }
 }

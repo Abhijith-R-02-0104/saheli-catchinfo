@@ -4,7 +4,7 @@ import { useTranslation } from "../../hooks/useTranslation.js";
 import { Header } from "./Header.jsx";
 import { Navigation } from "./Navigation.jsx";
 
-export function Layout({ activeTab, onSelectTab, children }) {
+export function Layout({ activeTab, onSelectTab, onNavigateToLanding, children }) {
   const { appData, storageError, clearStorageError } = useAppData();
   const { lang, t } = useTranslation();
 
@@ -79,7 +79,10 @@ export function Layout({ activeTab, onSelectTab, children }) {
       )}
 
       {/* 2. Top Header with Branding & Language Switcher */}
-      <Header onOpenSettings={() => onSelectTab("settings")} />
+      <Header
+        onOpenSettings={() => onSelectTab("settings")}
+        onNavigateToLanding={onNavigateToLanding}
+      />
 
       {/* 3. Navigation Bar (Desktop top bar + Mobile bottom bar) */}
       <Navigation activeTab={activeTab} onSelectTab={onSelectTab} />

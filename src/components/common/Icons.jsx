@@ -1105,5 +1105,103 @@ export function IconSettingsGear({ className = "h-4 w-4", strokeWidth = "1.8", .
   );
 }
 
+export function IconShield({ className = "h-4 w-4", strokeWidth = "1.8", ...props }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  );
+}
 
+export function IconMenu({ className = "h-5 w-5", strokeWidth = "1.8", ...props }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+      {...props}
+    >
+      <line x1="4" x2="20" y1="6" y2="6" />
+      <line x1="4" x2="20" y1="12" y2="12" />
+      <line x1="4" x2="20" y1="18" y2="18" />
+    </svg>
+  );
+}
 
+export function IconClose({ className = "h-5 w-5", strokeWidth = "1.8", ...props }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M18 6 6 18" />
+      <path d="m6 6 12 12" />
+    </svg>
+  );
+}
+
+export function IconChevronDown({ className = "h-4 w-4", strokeWidth = "1.8", ...props }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+/* Saheli Hidden-Heart Woman Silhouette Brand Emblem Icon */
+export function IconSaheliHeart({ className = "h-5 w-5", strokeWidth = "1.8", ...props }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+      {...props}
+    >
+      <path d="M12 4.5C9.8 2.5 6.5 3.2 5.2 5.5c-1.5 2.8-.2 6.5 2.6 9.5 1.7 1.8 3.2 3.2 4.2 4 1-.8 2.5-2.2 4.2-4 2.8-3 4.1-6.7 2.6-9.5-1.3-2.3-4.6-3-6.8-1Z" />
+      <path d="M11.5 6.8c-.9 1.1-.9 2.2-.5 3.1.4.8.7 1 .3 1.7-.3.5-.7.7-.5 1.4.3.9 1.4 1.4 1.9 2.2" />
+      <path d="M12.5 6.8c1.3.9 2.2 2.4 2 4.2-.2 1.8-1.3 3.2-2.5 4.8" />
+    </svg>
+  );
+}

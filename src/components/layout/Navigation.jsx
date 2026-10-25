@@ -13,6 +13,7 @@ import {
   IconAsk,
   IconPet,
   IconSettings,
+  IconLotus,
 } from "../common/Icons.jsx";
 
 function NavMoreIcon({ className = "h-5 w-5" }) {
@@ -59,6 +60,8 @@ function NavIcon({ name, className = "h-4 w-4" }) {
       return <IconPet className={className} />;
     case "settings":
       return <IconSettings className={className} />;
+    case "overview":
+      return <IconLotus className={className} />;
     case "more":
       return <NavMoreIcon className={className} />;
     default:
@@ -100,6 +103,7 @@ export function Navigation({ activeTab, onSelectTab }) {
     { id: "myspace", icon: "myspace" },
     ...(isPetEnabled ? [{ id: "pet", icon: "pet" }] : []),
     { id: "settings", icon: "settings" },
+    { id: "overview", icon: "overview" },
   ];
 
   const secondaryTabs = [...guidanceGroup, ...toolsGroup];
