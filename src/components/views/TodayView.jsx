@@ -5,7 +5,6 @@ import { calculateCyclePrediction } from "../../lib/cycle.js";
 import { getTodayLocalDate, daysBetween, addDays, isValidDateOnly } from "../../lib/dates.js";
 import { evaluateHealthSafety } from "../../lib/safety.js";
 import { CycleWheel } from "../cycle/CycleWheel.jsx";
-import { EditorialBanner } from "../common/EditorialBanner.jsx";
 import {
   IconLotus,
   IconCalendar,
@@ -29,8 +28,9 @@ import {
   IconAcne,
   IconInsights,
   IconMySpace,
-  IconPet,
   IconLog,
+  IconAsk,
+  IconPlus,
 } from "../common/Icons.jsx";
 
 function stripEmoji(str) {
@@ -65,8 +65,8 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
   const { lang, t } = useTranslation();
 
   const today = getTodayLocalDate();
-  const todayLog = appData.logsByDate[today] ?? null;
-  const isDiscreet = Boolean(appData.settings.discreetMode);
+  const todayLog = appData.logsByDate?.[today] ?? null;
+  const isDiscreet = Boolean(appData.settings?.discreetMode);
 
   // Quick check-in state synchronized with today's saved record
   const [quickFlow, setQuickFlow] = useState(() => todayLog?.period?.flow || "none");
@@ -161,44 +161,80 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
     setTimeout(() => setQuickSavedToast(false), 3000);
   }
 
+  const energyLabels = [
+    lang === "hi" ? "कम" : "Low",
+    lang === "hi" ? "धीमी" : "Gentle",
+    lang === "hi" ? "संतुलित" : "Balanced",
+    lang === "hi" ? "सक्रिय" : "Active",
+    lang === "hi" ? "उच्च" : "Peak",
+  ];
+
   return (
     <div className="space-y-6 sm:space-y-8 max-w-6xl mx-auto">
-      {/* 1. Calm, Personal Welcome Editorial Banner with Local Date */}
-      <EditorialBanner
-        variant="wellness"
-        tag={
-          <span className="flex items-center gap-1.5">
-            <IconLotus className="h-3.5 w-3.5 text-[#79516F] dark:text-[#E8A8BF]" />
-            <span>{isDiscreet ? t("discreetNav", "today") : t("today", "cycleDay")}</span>
-          </span>
-        }
-        title={`${greetingTimeText}, Saheli`}
-        description={isDiscreet ? t("common", "discreetTagline") : t("today", "subtitle")}
-        badge={
-          <span className="flex items-center gap-1.5">
-            <IconCalendar className="h-3.5 w-3.5 text-[#79516F] dark:text-[#E8A8BF]" />
-            <span>{formatFriendlyDate(today, lang)}</span>
-          </span>
-        }
-        primaryAction={{
-          label: isDiscreet ? t("discreetNav", "log") : t("today", "quickLogAction"),
-          onClick: onNavigateToLog,
-          icon: <IconArrowRight className="h-4 w-4" />,
-        }}
-      />
+      {/* 1. Calm, Personal Welcome Editorial Hero Area */}
+      <section className="relative overflow-hidden rounded-3xl border border-[var(--line-strong)] bg-gradient-to-br from-[var(--card)] via-[var(--card)] to-[var(--card-subtle)] p-6 sm:p-8 shadow-xs">
+        {/* Subtle decorative background watermarks */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-12 -top-12 h-64 w-64 rounded-full bg-[#E9B7C8]/15 dark:bg-[#3D2636]/20 blur-2xl"
+        />
 
+        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2 max-w-2xl">
+            {/* Tagline Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--card-subtle)] px-3 py-1 text-xs">
+              <IconLotus className="h-3.5 w-3.5 text-[var(--plum)] dark:text-[#E8A8BF]" aria-hidden="true" />
+              <span className="font-semibold text-[var(--plum)] dark:text-[#E8A8BF]">
+                {isDiscreet ? t("discreetNav", "today") : t("common", "appName")}
+              </span>
+              <span className="text-[var(--line-strong)]" aria-hidden="true">·</span>
+              <span className="text-[var(--muted)]">
+                {formatFriendlyDate(today, lang)}
+              </span>
+            </div>
 
-      {/* 2. Medical Urgent Alert Banner (if safety rules detect an acute concern) */}
+            {/* Time-sensitive Personalized Greeting */}
+            <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[var(--ink)] tracking-tight">
+              {greetingTimeText}, Saheli
+            </h1>
+
+            {/* Supportive Context Note */}
+            <p className="text-sm text-[var(--muted)] leading-relaxed">
+              {isDiscreet
+                ? t("common", "discreetTagline")
+                : currentCycleDay
+                ? `${lang === "hi" ? "आज आपके चक्र का" : "Today is"} ${lang === "hi" ? `दिन ${currentCycleDay}` : `Cycle Day ${currentCycleDay}`}. ${t("today", "subtitle")}`
+                : t("today", "subtitle")}
+            </p>
+          </div>
+
+          {/* Quick Primary Actions */}
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <button
+              type="button"
+              onClick={onNavigateToLog}
+              className="touch-target inline-flex items-center gap-2 rounded-2xl bg-[#79516F] dark:bg-[#8D5C82] text-white px-5 py-3 text-xs sm:text-sm font-bold shadow-xs hover:bg-[#633E5A] dark:hover:bg-[#A06B95] transition-all hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-[var(--plum)]"
+            >
+              <IconLog className="h-4 w-4" aria-hidden="true" />
+              <span>{isDiscreet ? t("discreetNav", "log") : t("today", "quickLogAction")}</span>
+              <IconArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* 2. Medical Urgent Alert Banner (if safety evaluator detects a red flag) */}
       {(hasUrgent || hasDoctor) && (
         <aside
           role="alert"
-          className={`rounded-2xl border p-4 shadow-xs transition-all ${
+          aria-live="polite"
+          className={`rounded-2xl border p-4 sm:p-5 shadow-xs transition-all ${
             hasUrgent
               ? "border-[#F4B8B0] bg-[#FDF2F0] text-[#8F1D1D] dark:bg-[#341619] dark:border-[#5C2329] dark:text-[#FFB3B8]"
               : "border-amber-200 bg-amber-50 text-amber-900 dark:bg-[#332211] dark:border-[#5E3F1F] dark:text-[#FFE0B2]"
           }`}
         >
-          <div className="flex items-start justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-start gap-3">
               <span className="shrink-0 mt-0.5" aria-hidden="true">
                 {hasUrgent ? (
@@ -211,10 +247,10 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
                 <h2 className="font-serif font-bold text-sm">
                   {hasUrgent ? t("doctor", "urgentBanner") : t("doctor", "safetyNotice")}
                 </h2>
-                <p className="mt-1 text-xs leading-relaxed">
+                <p className="mt-1 text-xs leading-relaxed max-w-2xl">
                   {hasUrgent
                     ? t("doctor", "urgentNotice")
-                    : "Some recorded symptoms or cycle patterns suggest consulting a healthcare provider for personalized advice."}
+                    : "Some recorded symptoms or cycle patterns suggest consulting a healthcare provider for personalized guidance."}
                 </p>
               </div>
             </div>
@@ -222,7 +258,7 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
               <button
                 type="button"
                 onClick={() => onNavigateToTab("doctor")}
-                className="touch-target shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-white dark:bg-[#281F30] px-3 py-1.5 text-xs font-bold shadow-xs hover:bg-slate-50 dark:hover:bg-[#34263E] text-[#292536] dark:text-[#F7EDF5] border border-[#DECED9] dark:border-[#42324C]"
+                className="touch-target shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-white dark:bg-[#281F30] px-3.5 py-2 text-xs font-bold shadow-xs hover:bg-slate-50 dark:hover:bg-[#34263E] text-[#292536] dark:text-[#F7EDF5] border border-[#DECED9] dark:border-[#42324C]"
               >
                 <span>{t("nav", "doctor")}</span>
                 <IconArrowRight className="h-3 w-3" />
@@ -232,12 +268,12 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
         </aside>
       )}
 
-      {/* 3. Main Composition: Cycle Overview (7 cols) & Daily Check-in (5 cols) */}
+      {/* 3. Main Dashboard Layout (Asymmetric 12-col grid) */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
-        {/* Left Column: Real Cycle Clock & Insights */}
-        <section className="lg:col-span-7 space-y-6">
-          {/* Cycle Clock Card */}
-          <div className="rounded-3xl border border-[var(--line)] bg-[var(--card)] p-6 sm:p-8 shadow-xs space-y-6">
+        {/* Left Column (7 cols): Cycle Overview & Metrics */}
+        <div className="lg:col-span-7 space-y-6 order-2 lg:order-1">
+          {/* Cycle Clock & Visualization Card */}
+          <section className="rounded-3xl border border-[var(--line)] bg-[var(--card)] p-6 sm:p-8 shadow-xs space-y-6">
             <div className="flex items-center justify-between border-b border-[var(--line)] pb-4">
               <div>
                 <h2 className="font-serif text-lg font-bold text-[var(--ink)]">
@@ -245,35 +281,35 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
                 </h2>
                 <p className="text-xs text-[var(--muted)]">
                   {hasPeriodRecords && latestPeriodStart
-                    ? `${lang === "hi" ? "अंतिम शुरुआत:" : "Last period start:"} ${latestPeriodStart}`
+                    ? `${lang === "hi" ? "अंतिम माहवारी शुरुआत:" : "Latest period start:"} ${latestPeriodStart}`
                     : lang === "hi"
-                    ? "कोई रिकॉर्ड नहीं — अपनी पहली माहवारी दर्ज करें"
+                    ? "कोई रिकॉर्ड नहीं — अपना पहला चक्र शुरू करें"
                     : "No period logged yet — track your first cycle"}
                 </p>
               </div>
 
               {predictionData?.prediction?.available && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-[#DCEBDD] dark:bg-[#203624] px-3 py-1 text-xs font-semibold text-[#3F6344] dark:text-[#88C690] border border-[#A2C8A5]/40">
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#DCEBDD] dark:bg-[#1E3322] px-3 py-1 text-xs font-semibold text-[#3F6344] dark:text-[#88C690] border border-[#A2C8A5]/40">
                   <IconSparkles className="h-3 w-3" />
                   <span>{lang === "hi" ? "पूर्वानुमान सक्रिय" : "Forecast Active"}</span>
                 </span>
               )}
             </div>
 
-            {/* If user has not logged any period: show clean, honest empty state */}
+            {/* Empty State vs Real Interactive Cycle Clock */}
             {!hasPeriodRecords ? (
-              <div className="py-8 px-4 text-center space-y-4">
+              <div className="py-10 px-4 text-center space-y-4">
                 <div className="w-16 h-16 mx-auto rounded-full bg-[var(--card-subtle)] border border-[var(--line)] flex items-center justify-center text-[var(--plum)]">
                   <IconLotus className="h-8 w-8" />
                 </div>
-                <div className="max-w-md mx-auto space-y-1">
+                <div className="max-w-md mx-auto space-y-1.5">
                   <h3 className="font-serif text-base font-bold text-[var(--ink)]">
                     {lang === "hi" ? "अपना पहला चक्र शुरू करें" : "Begin Tracking Your Cycle"}
                   </h3>
                   <p className="text-xs text-[var(--muted)] leading-relaxed">
                     {lang === "hi"
-                      ? "अपनी पहली माहवारी की शुरुआत दर्ज करें। इसके बाद आपकी व्यक्तिगत चक्र घड़ी, चरण गाइड और पूर्वानुमान सक्रिय हो जाएंगे।"
-                      : "Log your first period start date to activate your personalized cycle clock, phase forecast, and wellness windows. Estimates are never invented without real records."}
+                      ? "अपनी पहली माहवारी की शुरुआत दर्ज करें। इसके बाद आपकी व्यक्तिगत चक्र घड़ी, चरण गाइड और पूर्वानुमान सक्रिय हो जाएंगे। बिना वास्तविक डेटा के कभी भी अनुमान नहीं लगाए जाते।"
+                      : "Log your first period start date to activate your personalized cycle clock, phase forecast, and wellness windows. Estimates are never fabricated without real records."}
                   </p>
                 </div>
                 <button
@@ -287,7 +323,6 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
                 </button>
               </div>
             ) : (
-              /* Real Interactive Cycle Wheel */
               <CycleWheel
                 currentCycleDay={currentCycleDay}
                 cycleLength={predictionData?.medianCycleLength || 28}
@@ -296,7 +331,7 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
               />
             )}
 
-            {/* Upcoming Cycle Metrics */}
+            {/* Upcoming Cycle Metrics Cards */}
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 pt-2">
               <div className="rounded-2xl border border-[var(--line)] bg-[var(--card-subtle)] p-4">
                 <div className="flex items-center gap-1.5">
@@ -315,8 +350,8 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
                     ? `±${predictionData.prediction.spreadDays} ${t("common", "days")}`
                     : hasPeriodRecords
                     ? lang === "hi"
-                      ? "अधिक चक्र पूर्ण होने पर अनुमान उपलब्ध होगा"
-                      : "Log 2+ cycles for automatic predictions"
+                      ? "2 चक्र पूर्ण होने पर अनुमान उपलब्ध होगा"
+                      : "Log 2+ cycles for predictions"
                     : t("emptyStates", "noInsights")}
                 </p>
               </div>
@@ -340,24 +375,24 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
                 </p>
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* Quick Real Data Insights Pills */}
+          {/* Real Logged Statistics Summary */}
           <div className="grid grid-cols-3 gap-3">
             <div className="rounded-2xl border border-[var(--line)] bg-[var(--card)] p-4 text-center shadow-xs">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--muted)]">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[var(--muted)]">
                 {lang === "hi" ? "दर्ज दिवस" : "Days Logged"}
               </span>
-              <p className="mt-1 font-serif text-xl font-bold text-[var(--plum)]">
+              <p className="mt-1 font-serif text-xl sm:text-2xl font-bold text-[var(--plum)]">
                 {totalDaysLogged}
               </p>
             </div>
 
             <div className="rounded-2xl border border-[var(--line)] bg-[var(--card)] p-4 text-center shadow-xs">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--muted)]">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[var(--muted)]">
                 {lang === "hi" ? "औसत चक्र" : "Avg Cycle"}
               </span>
-              <p className="mt-1 font-serif text-xl font-bold text-[var(--ink)]">
+              <p className="mt-1 font-serif text-xl sm:text-2xl font-bold text-[var(--ink)]">
                 {predictionData?.medianCycleLength
                   ? `${predictionData.medianCycleLength}d`
                   : "--"}
@@ -365,10 +400,10 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
             </div>
 
             <div className="rounded-2xl border border-[var(--line)] bg-[var(--card)] p-4 text-center shadow-xs">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--muted)]">
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-[var(--muted)]">
                 {lang === "hi" ? "नियमितता" : "Regularity"}
               </span>
-              <p className="mt-1 font-serif text-sm font-bold text-[#3F6344] dark:text-[#88C690]">
+              <p className="mt-1 font-serif text-xs sm:text-sm font-bold text-[#3F6344] dark:text-[#88C690] truncate">
                 {predictionData?.prediction?.available
                   ? predictionData.prediction.isRegular
                     ? t("insights", "regular")
@@ -377,11 +412,11 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
               </p>
             </div>
           </div>
-        </section>
+        </div>
 
-        {/* Right Column: Daily Wellness Check-in & Navigation Shortcuts */}
-        <div className="lg:col-span-5 space-y-6">
-          {/* Quick Daily Check-in Card */}
+        {/* Right Column (5 cols): Daily Check-in Panel & Quick Shortcuts */}
+        <div className="lg:col-span-5 space-y-6 order-1 lg:order-2">
+          {/* Quick Check-in Card */}
           <section className="rounded-3xl border border-[var(--line)] bg-[var(--card)] p-6 shadow-xs space-y-5">
             <div className="flex items-center justify-between border-b border-[var(--line)] pb-3">
               <div>
@@ -392,7 +427,9 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
                   {todayLog ? t("today", "completedToday") : t("common", "today")}
                 </p>
               </div>
-              <IconSparkles className="h-5 w-5 text-[var(--plum)]" />
+              <div className="h-8 w-8 rounded-full bg-[var(--card-subtle)] border border-[var(--line)] flex items-center justify-center text-[var(--plum)]">
+                <IconSparkles className="h-4 w-4" />
+              </div>
             </div>
 
             {/* 1. Period Flow Quick Selector */}
@@ -461,7 +498,7 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
                       type="button"
                       onClick={() => setQuickFlow(item.id)}
                       aria-pressed={isSelected}
-                      className={`touch-target rounded-xl py-2 px-1 text-xs font-semibold text-center transition-all border inline-flex items-center justify-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--plum)] focus-visible:ring-offset-1 ${
+                      className={`touch-target rounded-xl py-2 px-1 text-xs font-semibold text-center transition-all border inline-flex items-center justify-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--plum)] ${
                         isSelected
                           ? "bg-[#79516F] text-white border-[#79516F] shadow-xs dark:bg-[#8D5C82] dark:border-[#8D5C82]"
                           : "bg-[var(--card-subtle)] text-[var(--ink)] border-[var(--line-strong)] hover:bg-[var(--plum-light)]"
@@ -475,7 +512,7 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
               </div>
             </div>
 
-            {/* 2. Quick Mood Selector */}
+            {/* 2. Mood Selector */}
             <div>
               <label className="text-xs font-bold uppercase tracking-wider text-[var(--muted)] block mb-2">
                 {t("logForm", "mood")}
@@ -550,7 +587,7 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
                       type="button"
                       onClick={() => setQuickMood(item.id)}
                       aria-pressed={isSelected}
-                      className={`touch-target rounded-xl px-3 py-1.5 text-xs font-medium transition-all border inline-flex items-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--plum)] focus-visible:ring-offset-1 ${
+                      className={`touch-target rounded-xl px-3 py-1.5 text-xs font-medium transition-all border inline-flex items-center gap-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--plum)] ${
                         isSelected
                           ? "bg-[#79516F] text-white border-[#79516F] shadow-xs font-bold dark:bg-[#8D5C82] dark:border-[#8D5C82]"
                           : "bg-[var(--card-subtle)] text-[var(--ink)] border-[var(--line-strong)] hover:bg-[var(--plum-light)]"
@@ -564,40 +601,72 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
               </div>
             </div>
 
-            {/* 3. Energy & Sleep Sliders */}
-            <div className="grid grid-cols-2 gap-3 pt-1">
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="font-bold text-[var(--muted)]">{t("logForm", "energy")}</span>
-                  <span className="font-bold text-[var(--plum)]">{quickEnergy}/5</span>
-                </div>
-                <input
-                  type="range"
-                  min="1"
-                  max="5"
-                  value={quickEnergy}
-                  onChange={(e) => setQuickEnergy(Number(e.target.value))}
-                  className="w-full accent-[#79516F] dark:accent-[#8D5C82]"
-                />
+            {/* 3. Energy Rating (Accessible 1 to 5 buttons) */}
+            <div>
+              <div className="flex items-center justify-between text-xs mb-2">
+                <span className="font-bold uppercase tracking-wider text-[var(--muted)]">
+                  {t("logForm", "energy")}
+                </span>
+                <span className="font-semibold text-[var(--plum)]">
+                  {energyLabels[quickEnergy - 1]} ({quickEnergy}/5)
+                </span>
               </div>
-
-              <div>
-                <div className="flex justify-between text-xs mb-1">
-                  <span className="font-bold text-[var(--muted)]">{t("logForm", "sleepHours")}</span>
-                  <span className="font-bold text-[var(--plum)]">{quickSleep}h</span>
-                </div>
-                <input
-                  type="range"
-                  min="4"
-                  max="12"
-                  value={quickSleep}
-                  onChange={(e) => setQuickSleep(Number(e.target.value))}
-                  className="w-full accent-[#79516F] dark:accent-[#8D5C82]"
-                />
+              <div className="grid grid-cols-5 gap-1.5">
+                {[1, 2, 3, 4, 5].map((lvl) => {
+                  const isSelected = quickEnergy === lvl;
+                  return (
+                    <button
+                      key={lvl}
+                      type="button"
+                      onClick={() => setQuickEnergy(lvl)}
+                      aria-pressed={isSelected}
+                      className={`touch-target rounded-xl py-2 text-xs font-bold transition-all border text-center ${
+                        isSelected
+                          ? "bg-[#79516F] text-white border-[#79516F] shadow-2xs dark:bg-[#8D5C82] dark:border-[#8D5C82]"
+                          : "bg-[var(--card-subtle)] text-[var(--ink)] border-[var(--line)] hover:bg-[var(--plum-light)]"
+                      }`}
+                    >
+                      {lvl}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
-            {/* 4. Quick Symptoms Chips */}
+            {/* 4. Sleep Hours Stepper */}
+            <div>
+              <div className="flex items-center justify-between text-xs mb-2">
+                <span className="font-bold uppercase tracking-wider text-[var(--muted)]">
+                  {t("logForm", "sleepHours")}
+                </span>
+                <span className="font-semibold text-[var(--plum)]">
+                  {quickSleep} {t("common", "hours") || "hours"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between rounded-2xl border border-[var(--line)] bg-[var(--card-subtle)] p-2">
+                <button
+                  type="button"
+                  onClick={() => setQuickSleep((s) => Math.max(4, s - 0.5))}
+                  className="touch-target inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--card)] border border-[var(--line)] text-[var(--ink)] hover:bg-[var(--plum-light)]"
+                  aria-label="Decrease sleep hours"
+                >
+                  <IconMinus className="h-4 w-4" />
+                </button>
+                <div className="text-center font-serif text-base font-bold text-[var(--ink)]">
+                  {quickSleep} hrs
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setQuickSleep((s) => Math.min(14, s + 0.5))}
+                  className="touch-target inline-flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--card)] border border-[var(--line)] text-[var(--ink)] hover:bg-[var(--plum-light)]"
+                  aria-label="Increase sleep hours"
+                >
+                  <IconPlus className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* 5. Quick Symptoms Chips */}
             <div>
               <label className="text-xs font-bold uppercase tracking-wider text-[var(--muted)] block mb-2">
                 {t("logForm", "symptoms")}
@@ -616,6 +685,7 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
                       key={item.id}
                       type="button"
                       onClick={() => toggleSymptom(item.id)}
+                      aria-pressed={isChecked}
                       className={`touch-target rounded-xl px-3 py-1.5 text-xs font-medium transition-all border inline-flex items-center gap-1.5 ${
                         isChecked
                           ? "bg-[#DCEBDD] text-[#3F6344] border-[#3F6344] font-semibold dark:bg-[#1E3722] dark:text-[#88C690] dark:border-[#88C690]"
@@ -631,24 +701,15 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
               </div>
             </div>
 
-            {/* Save Button */}
+            {/* Save Button with Toast State */}
             <div className="pt-2">
               <button
                 type="button"
                 onClick={handleQuickSave}
-                className="touch-target w-full rounded-2xl bg-[#79516F] hover:bg-[#633E5A] dark:bg-[#8D5C82] dark:hover:bg-[#A06B95] py-3 text-sm font-semibold text-white shadow-xs transition-all inline-flex items-center justify-center gap-2 focus-visible:outline-2 focus-visible:outline-[#79516F]"
+                className="touch-target w-full rounded-2xl bg-[#79516F] hover:bg-[#633E5A] dark:bg-[#8D5C82] dark:hover:bg-[#A06B95] py-3 text-sm font-bold text-white shadow-xs transition-all inline-flex items-center justify-center gap-2 focus-visible:outline-2 focus-visible:outline-[#79516F] cursor-pointer"
               >
-                {quickSavedToast ? (
-                  <>
-                    <IconCheck className="h-4 w-4" />
-                    <span>{t("today", "completedToday")}</span>
-                  </>
-                ) : (
-                  <>
-                    <IconCheck className="h-4 w-4" />
-                    <span>{t("buttons", "save")}</span>
-                  </>
-                )}
+                <IconCheck className="h-4 w-4" />
+                <span>{quickSavedToast ? t("today", "completedToday") : t("buttons", "save")}</span>
               </button>
             </div>
           </section>
@@ -689,11 +750,11 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
 
               <button
                 type="button"
-                onClick={() => onNavigateToTab?.("pet")}
+                onClick={() => onNavigateToTab?.("ask")}
                 className="touch-target flex items-center gap-2 rounded-xl border border-[var(--line)] bg-[var(--card-subtle)] p-3 font-semibold text-[var(--ink)] hover:bg-[var(--plum-light)] text-left transition-colors"
               >
-                <IconPet className="h-4 w-4 text-[var(--plum)] shrink-0" />
-                <span>{t("nav", "pet")}</span>
+                <IconAsk className="h-4 w-4 text-[var(--plum)] shrink-0" />
+                <span>{t("nav", "ask")}</span>
               </button>
             </div>
           </section>
@@ -702,4 +763,3 @@ export function TodayView({ onNavigateToLog, onNavigateToTab }) {
     </div>
   );
 }
-

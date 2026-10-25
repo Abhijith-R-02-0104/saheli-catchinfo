@@ -1,60 +1,21 @@
-/** Source-linked bilingual health education; general information, not diagnosis. */
-export const LESSONS = [
-  {
-    id: "cycle-basics", category: "cycle",
-    title: { en: "Understanding the menstrual cycle", hi: "मासिक चक्र को समझें" },
-    summary: { en: "The menstrual cycle is counted from the first day of one period to the first day of the next. Hormones coordinate changes in the ovaries and uterus; timing varies.", hi: "मासिक चक्र एक माहवारी के पहले दिन से अगली माहवारी के पहले दिन तक गिना जाता है। हार्मोन अंडाशय और गर्भाशय में बदलावों को नियंत्रित करते हैं; समय अलग-अलग हो सकता है।" },
-    sections: [{ heading: { en: "Phases and estimates", hi: "चरण और अनुमान" }, body: { en: "The cycle is often described as the menstrual phase, follicular phase, ovulation and luteal phase. These descriptions do not guarantee that any day is safe from pregnancy. Track dates if helpful, but treat app predictions as estimates.", hi: "चक्र को अक्सर माहवारी चरण, फॉलिक्युलर चरण, अंडोत्सर्जन और ल्यूटियल चरण में समझाया जाता है। इससे किसी दिन को गर्भधारण से सुरक्षित होने की गारंटी नहीं मिलती। तारीखें लिखें, लेकिन ऐप के अनुमान को निश्चित न मानें।" } }],
-    source: { name: "WHO — Menstrual health", url: "https://www.who.int/news-room/fact-sheets/detail/menstrual-health" },
-    medicalTerms: { en: { Ovulation: "Release of an egg from an ovary." }, hi: { अंडोत्सर्जन: "अंडाशय से अंडा निकलने की प्रक्रिया।" } },
-  },
-  {
-    id: "cycle-changes", category: "cycle",
-    title: { en: "Cycle changes and irregular periods", hi: "चक्र में बदलाव और अनियमित माहवारी" },
-    summary: { en: "Periods can vary, especially during the first years after they begin. Pregnancy, stress, weight or exercise changes, hormonal contraception and health conditions may affect timing.", hi: "माहवारी का समय बदल सकता है, खासकर शुरुआत के वर्षों में। गर्भावस्था, तनाव, वजन या व्यायाम में बदलाव, हार्मोनल गर्भनिरोधक और स्वास्थ्य स्थितियाँ समय को प्रभावित कर सकती हैं।" },
-    sections: [{ heading: { en: "When to ask for help", hi: "कब सलाह लें" }, body: { en: "Talk with a healthcare professional if your pattern changes persistently, you have bleeding between periods, bleeding lasts longer than seven days, or you go about three months without a period. Seek urgent care for severe symptoms.", hi: "पैटर्न लगातार बदले, माहवारी के बीच रक्तस्राव हो, रक्तस्राव सात दिनों से अधिक रहे या लगभग तीन महीने तक माहवारी न आए, तो स्वास्थ्यकर्मी से बात करें। गंभीर लक्षण हों तो तुरंत सहायता लें।" } }],
-    source: { name: "NHS — Irregular periods", url: "https://www.nhs.uk/symptoms/irregular-periods/" },
-    medicalTerms: { en: { "Irregular period": "A period pattern whose timing changes or falls outside expected ranges." }, hi: { "अनियमित माहवारी": "ऐसा माहवारी पैटर्न जिसमें समय बदलता रहे या अपेक्षित सीमा से बाहर हो।" } },
-  },
-  {
-    id: "pcos", category: "conditions",
-    title: { en: "PCOS / PCOD: an overview", hi: "PCOS / PCOD: एक परिचय" },
-    summary: { en: "Polycystic ovary syndrome (PCOS) is a hormonal condition that can affect periods, skin, hair growth and fertility. Similar symptoms can have other causes, so an FAQ cannot diagnose it.", hi: "पॉलीसिस्टिक ओवरी सिंड्रोम (PCOS) एक हार्मोन संबंधी स्थिति है जो माहवारी, त्वचा, बालों की वृद्धि और प्रजनन क्षमता को प्रभावित कर सकती है। ऐसे लक्षणों के अन्य कारण भी हो सकते हैं; FAQ निदान नहीं कर सकता।" },
-    sections: [{ heading: { en: "Signs and evaluation", hi: "संकेत और जाँच" }, body: { en: "Possible signs include irregular or absent periods, acne, increased facial or body hair, or thinning scalp hair. A clinician considers your history and symptoms and may suggest tests. Care depends on symptoms and goals; do not start medicines or supplements without professional advice.", hi: "संभावित संकेतों में अनियमित या बंद माहवारी, मुंहासे, चेहरे या शरीर पर अधिक बाल, या सिर के बाल पतले होना शामिल हैं। स्वास्थ्यकर्मी इतिहास और लक्षण देखकर जाँच सुझा सकते हैं। देखभाल लक्षणों और लक्ष्यों पर निर्भर करती है; सलाह के बिना दवा या सप्लीमेंट शुरू न करें।" } }],
-    source: { name: "NHS — Polycystic ovary syndrome (PCOS)", url: "https://www.nhs.uk/conditions/polycystic-ovary-syndrome-pcos/" },
-    medicalTerms: { en: { Hormonal: "Related to hormones, chemical messengers in the body." }, hi: { "हार्मोन संबंधी": "शरीर में संदेश पहुँचाने वाले रसायनों यानी हार्मोन से संबंधित।" } },
-  },
-  {
-    id: "cramps", category: "symptoms",
-    title: { en: "Period cramps and pain", hi: "माहवारी की ऐंठन और दर्द" },
-    summary: { en: "Cramps can occur as the uterus contracts during menstruation. Gentle heat may help some people, but severe, worsening or life-disrupting pain deserves medical assessment.", hi: "माहवारी के दौरान गर्भाशय के सिकुड़ने से ऐंठन हो सकती है। हल्की गर्माहट कुछ लोगों को राहत दे सकती है, लेकिन तेज़, बढ़ता हुआ या रोज़मर्रा के काम रोकने वाला दर्द जाँच की माँग करता है।" },
-    sections: [{ heading: { en: "When pain needs assessment", hi: "कब दर्द की जाँच ज़रूरी है" }, body: { en: "Seek advice if pain is severe, new, getting worse, happens outside periods or stops usual activities. Fever with severe pelvic pain needs urgent assessment.", hi: "दर्द बहुत तेज़, नया, बढ़ता हुआ, माहवारी के बाहर होने वाला या सामान्य गतिविधियाँ रोकने वाला हो तो सलाह लें। तेज़ निचले पेट के दर्द के साथ बुखार हो तो तुरंत जाँच कराएँ।" } }],
-    source: { name: "NHS — Period pain", url: "https://www.nhs.uk/conditions/period-pain/" },
-    medicalTerms: { en: { Uterus: "The organ in which a pregnancy can develop." }, hi: { गर्भाशय: "वह अंग जिसमें गर्भावस्था विकसित हो सकती है।" } },
-  },
-  {
-    id: "menstrual-products", category: "hygiene",
-    title: { en: "Menstrual products and hygiene", hi: "माहवारी उत्पाद और स्वच्छता" },
-    summary: { en: "Pads, tampons, cups and reusable cloth are options. Choose what is accessible and comfortable, follow product instructions, wash hands and clean or change products regularly.", hi: "पैड, टैम्पॉन, कप और दोबारा इस्तेमाल होने वाला कपड़ा विकल्प हैं। जो उपलब्ध और सुविधाजनक हो उसे चुनें, निर्देशों का पालन करें, हाथ धोएँ और उत्पाद नियमित बदलें या साफ़ करें।" },
-    sections: [{ heading: { en: "Reusable materials and external hygiene", hi: "दोबारा इस्तेमाल की सामग्री और बाहरी स्वच्छता" }, body: { en: "Reusable cloth should be washed thoroughly and fully dried before reuse, then stored clean and dry. Wash the external genital area gently. Avoid scented internal cleansers or washing inside the vagina. Seek advice for persistent irritation, pain or unusual discharge.", hi: "दोबारा इस्तेमाल होने वाले कपड़े को अच्छी तरह धोकर पूरी तरह सुखाएँ और साफ़-सूखी जगह रखें। बाहरी जननांग क्षेत्र को धीरे साफ़ करें। सुगंधित अंदरूनी क्लीनज़र या योनि के अंदर धोने से बचें। लगातार जलन, दर्द या असामान्य स्राव हो तो सलाह लें।" } }],
-    source: { name: "WHO — Menstrual health", url: "https://www.who.int/news-room/fact-sheets/detail/menstrual-health" },
-    medicalTerms: { en: { Reusable: "Designed to be cleaned and used again." }, hi: { "दोबारा इस्तेमाल योग्य": "जिसे साफ़ करके फिर से इस्तेमाल किया जा सके।" } },
-  },
-  {
-    id: "first-period", category: "first-period",
-    title: { en: "A guide to your first period", hi: "पहली माहवारी के लिए मार्गदर्शिका" },
-    summary: { en: "The first period is a normal part of puberty. Timing varies. Preparing a menstrual product, spare underwear and a trusted person to ask can make the experience less stressful.", hi: "पहली माहवारी किशोरावस्था का सामान्य हिस्सा है। समय अलग-अलग होता है। माहवारी उत्पाद, अतिरिक्त अंडरवियर और मदद के लिए भरोसेमंद व्यक्ति तैयार रखना तनाव कम कर सकता है।" },
-    sections: [{ heading: { en: "What to do", hi: "क्या करें" }, body: { en: "Use a comfortable product, follow its instructions, change or clean it as directed, and wash your hands. Ask a trusted adult, school nurse or healthcare worker questions. Seek medical advice for very heavy bleeding, severe pain or faintness.", hi: "सुविधाजनक उत्पाद चुनें, निर्देशों का पालन करें, समय पर बदलें या साफ़ करें और हाथ धोएँ। भरोसेमंद वयस्क, स्कूल नर्स या स्वास्थ्यकर्मी से सवाल पूछें। बहुत अधिक रक्तस्राव, तेज़ दर्द या बेहोशी जैसा महसूस होने पर चिकित्सकीय सलाह लें।" } }],
-    source: { name: "WHO — Menstrual health", url: "https://www.who.int/news-room/fact-sheets/detail/menstrual-health" },
-    medicalTerms: { en: { Puberty: "The stage when a child's body develops toward adulthood." }, hi: { "किशोरावस्था में शारीरिक बदलाव": "वह समय जब बच्चे का शरीर वयस्कता की ओर विकसित होता है।" } },
-  },
-  {
-    id: "pms", category: "mental-health",
-    title: { en: "Mood changes before a period", hi: "माहवारी से पहले मूड में बदलाव" },
-    summary: { en: "Some people experience changes in mood, sleep, appetite or energy before or during menstruation. Symptoms that repeatedly affect daily life deserve support and assessment.", hi: "कुछ लोगों को माहवारी से पहले या दौरान मूड, नींद, भूख या ऊर्जा में बदलाव महसूस होता है। बार-बार रोज़मर्रा के जीवन को प्रभावित करने वाले लक्षणों में सहायता और जाँच ज़रूरी है।" },
-    sections: [{ heading: { en: "Getting support", hi: "सहायता लेना" }, body: { en: "Record symptoms if helpful and discuss severe or persistent symptoms with a healthcare professional. If you feel at risk of harming yourself, seek immediate help and contact a trusted person or local emergency service.", hi: "ज़रूरत हो तो लक्षण लिखें और गंभीर या लगातार लक्षणों पर स्वास्थ्यकर्मी से बात करें। यदि खुद को नुकसान पहुँचाने का खतरा महसूस हो, तो तुरंत मदद लें और भरोसेमंद व्यक्ति या स्थानीय आपातकालीन सेवा से संपर्क करें।" } }],
-    source: { name: "NHS — PMS", url: "https://www.nhs.uk/conditions/pre-menstrual-syndrome/" },
-    medicalTerms: { en: { PMS: "A group of symptoms some people experience before a period." }, hi: { PMS: "माहवारी से पहले कुछ लोगों में होने वाले लक्षणों का समूह।" } },
-  },
-];
-export function getLessonById(id) { return LESSONS.find((lesson) => lesson.id === id) ?? null; }
+/**
+ * Source-linked bilingual health education; general information, not diagnosis.
+ * Re-exports the comprehensive educational library for backward compatibility.
+ */
+import { ALL_LESSONS, getLessonById as getLessonByIdFromLib } from "../data/lessons/index.js";
+
+export const LESSONS = ALL_LESSONS.map((l) => ({
+  ...l,
+  summary: l.intro, // Backward-compatibility alias
+  source: l.sources?.[0] || { name: "ACOG / NHS / WHO", url: "https://www.who.int" },
+}));
+
+export function getLessonById(id) {
+  const lesson = getLessonByIdFromLib(id);
+  if (!lesson) return null;
+  return {
+    ...lesson,
+    summary: lesson.intro,
+    source: lesson.sources?.[0] || { name: "ACOG / NHS / WHO", url: "https://www.who.int" },
+  };
+}
