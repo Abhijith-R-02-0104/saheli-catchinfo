@@ -19,7 +19,7 @@ import {
 
 export function DoctorView() {
   const { appData, updateSettings } = useAppData();
-  const { lang, t } = useTranslation();
+  const { lang, t, getTranslation } = useTranslation();
 
   const todayStr = getTodayLocalDate();
 
@@ -139,7 +139,9 @@ export function DoctorView() {
         badge={
           <span className="flex items-center gap-1">
             <IconCheck className="h-3 w-3 text-[#79516F] dark:text-[#E8A8BF]" />
-            <span>{lang === "hi" ? "गोपनीय परामर्श" : "Clinical Guidance"}</span>
+            <span>
+              {lang === "hi" ? "गोपनीय परामर्श" : "Clinical Guidance"}
+            </span>
           </span>
         }
         primaryAction={
@@ -187,7 +189,9 @@ export function DoctorView() {
           {safety.needsAgeGroupSelection && (
             <div className="rounded-3xl border border-[#DECED9] dark:border-[#42324C] bg-[#FAF5F0] dark:bg-[#281F30] p-6 space-y-3">
               <span className="text-xs font-bold uppercase tracking-wider text-[#79516F] dark:text-[#E8A8BF]">
-                {lang === "hi" ? "सटीक मूल्यांकन हेतु आयु वर्ग" : "Age group for accurate clinical thresholds"}
+                {lang === "hi"
+                  ? "सटीक मूल्यांकन हेतु आयु वर्ग"
+                  : "Age group for accurate clinical thresholds"}
               </span>
               <p className="text-xs text-[#292536] dark:text-[#F7EDF5]">
                 {lang === "hi"
@@ -207,7 +211,9 @@ export function DoctorView() {
                   onClick={() => updateSettings({ ageGroup: "under-18" })}
                   className="touch-target rounded-xl border border-[#79516F] bg-white text-[#79516F] px-4 py-2 text-xs font-semibold hover:bg-[#FAF5F0] dark:border-[#8D5C82] dark:bg-[#281F30] dark:text-[#E8A8BF]"
                 >
-                  {lang === "hi" ? "किशोरी (18 वर्ष से कम)" : "Adolescent (Under 18)"}
+                  {lang === "hi"
+                    ? "किशोरी (18 वर्ष से कम)"
+                    : "Adolescent (Under 18)"}
                 </button>
               </div>
             </div>
@@ -230,15 +236,23 @@ export function DoctorView() {
 
               <div className="space-y-3 pt-2">
                 {urgentFindings.map((finding) => (
-                  <div key={finding.id} className="rounded-2xl bg-[var(--card)] p-4 text-xs border border-[#F4B8B0] dark:border-[#5C2329] space-y-1">
+                  <div
+                    key={finding.id}
+                    className="rounded-2xl bg-[var(--card)] p-4 text-xs border border-[#F4B8B0] dark:border-[#5C2329] space-y-1"
+                  >
                     <p className="font-bold text-sm text-[#8F1D1D] dark:text-[#FFB3B8]">
-                      {finding.titleKey || finding.id}
+                      {getTranslation(
+                        finding.titleKey,
+                        "Urgent health concern",
+                      )}
                     </p>
                     <p className="text-slate-800 dark:text-[#F7EDF5]">
-                      <strong>Observed dates:</strong> {finding.dates.join(", ")}
+                      <strong>Observed dates:</strong>{" "}
+                      {finding.dates.join(", ")}
                     </p>
                     <p className="text-[#8F1D1D] dark:text-[#FFB3B8] font-medium">
-                      Immediate action: Call 112 or visit nearest emergency care.
+                      Immediate action: Call 112 or visit nearest emergency
+                      care.
                     </p>
                   </div>
                 ))}
@@ -262,7 +276,12 @@ export function DoctorView() {
                     <div className="flex items-center justify-between">
                       <span className="font-serif text-base font-bold text-amber-900 dark:text-[#FFE0B2] inline-flex items-center gap-1.5">
                         <IconAlertTriangle className="h-4 w-4 shrink-0 text-amber-700 dark:text-[#FFE0B2]" />
-                        <span>{finding.titleKey || finding.id}</span>
+                        <span>
+                          {getTranslation(
+                            finding.titleKey,
+                            "Health observation",
+                          )}
+                        </span>
                       </span>
                       <span className="rounded-full bg-amber-200 dark:bg-[#5E3F1F] text-amber-900 dark:text-[#FFE0B2] px-2.5 py-0.5 text-[10px] font-bold uppercase">
                         Consult Gynecologist
@@ -275,7 +294,8 @@ export function DoctorView() {
 
                     {finding.sources?.length > 0 && (
                       <p className="text-[11px] text-[var(--muted)]">
-                        <strong>Clinical reference:</strong> {finding.sources.map((s) => s.name).join(", ")}
+                        <strong>Clinical reference:</strong>{" "}
+                        {finding.sources.map((s) => s.name).join(", ")}
                       </p>
                     )}
                   </div>
@@ -285,11 +305,11 @@ export function DoctorView() {
               <div className="rounded-2xl bg-[#F4FAF5] dark:bg-[#1E3722] p-5 text-xs text-[#3F6344] dark:text-[#88C690] flex items-center gap-3 border border-[#DCEBDD] dark:border-[#2F5A35]">
                 <IconCheck className="h-5 w-5 shrink-0" />
                 <div>
-                  <p className="font-bold">
-                    {t("emptyStates", "noFindings")}
-                  </p>
+                  <p className="font-bold">{t("emptyStates", "noFindings")}</p>
                   <p className="text-[var(--muted)] mt-0.5">
-                    No active threshold alerts triggered based on your current logs. Always consult a physician if you experience any concerning symptoms.
+                    No active threshold alerts triggered based on your current
+                    logs. Always consult a physician if you experience any
+                    concerning symptoms.
                   </p>
                 </div>
               </div>
@@ -338,7 +358,13 @@ export function DoctorView() {
             <ul className="list-disc pl-5 space-y-2 text-xs text-[var(--ink)]">
               {selfReportedRules.map((rule) => (
                 <li key={rule.id}>
-                  <strong>{rule.titleKey || rule.id}:</strong> {rule.whyKey || "Consult doctor for clinical review."}
+                  <strong>
+                    {getTranslation(rule.titleKey, "Health concern")}:
+                  </strong>{" "}
+                  {getTranslation(
+                    rule.whyKey,
+                    "Please consult a healthcare professional for guidance.",
+                  )}
                 </li>
               ))}
             </ul>
@@ -393,7 +419,9 @@ export function DoctorView() {
             {/* Custom Question Input */}
             <div className="pt-2">
               <label className="block text-xs font-bold uppercase tracking-wider text-[var(--muted)] mb-1.5">
-                {lang === "hi" ? "अतिरिक्त प्रश्न जोड़ें" : "Add an additional question for your doctor"}
+                {lang === "hi"
+                  ? "अतिरिक्त प्रश्न जोड़ें"
+                  : "Add an additional question for your doctor"}
               </label>
               <div className="flex gap-2">
                 <input
@@ -427,7 +455,11 @@ export function DoctorView() {
                     className="touch-target inline-flex items-center gap-1.5 rounded-xl border border-[var(--line-strong)] bg-[var(--card)] px-3.5 py-1.5 text-xs font-bold text-[var(--plum)] hover:bg-[var(--card-subtle)]"
                   >
                     <IconCheck className="h-3.5 w-3.5" />
-                    <span>{copiedSummary ? t("buttons", "copied") : t("buttons", "copy")}</span>
+                    <span>
+                      {copiedSummary
+                        ? t("buttons", "copied")
+                        : t("buttons", "copy")}
+                    </span>
                   </button>
                   <button
                     type="button"
@@ -444,7 +476,6 @@ export function DoctorView() {
                 {generateSummaryText()}
               </pre>
             </div>
-
           </div>
         </div>
       )}

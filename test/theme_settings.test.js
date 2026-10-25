@@ -124,31 +124,49 @@ describe('Theme and Settings System Verification', () => {
     assert.ok(cssCode.includes('[data-theme="dark"] .text-\\[\\#292536\\]'), 'Overrides charcoal text in dark theme');
   });
 
-  it('7. Complete bilingual parity across all translation dictionary sections', () => {
+  it("7. Complete bilingual parity across all translation dictionary sections", () => {
     const enSections = Object.keys(translations.en);
     const hiSections = Object.keys(translations.hi);
 
     assert.deepStrictEqual(
       enSections.sort(),
       hiSections.sort(),
-      'Both English and Hindi contain the exact same translation sections'
+      "Both English and Hindi contain the exact same translation sections",
     );
 
-    for (const section of enSections) {
-      const enKeys = Object.keys(translations.en[section]);
-      const hiKeys = Object.keys(translations.hi[section]);
+    function checkNestedParity(enValue, hiValue, path) {
+      assert.ok(
+        hiValue && typeof hiValue === "object" && !Array.isArray(hiValue),
+        `Hindi translation structure is missing at ${path}`,
+      );
 
-      for (const key of enKeys) {
-        assert.ok(
-          hiKeys.includes(key),
-          `Hindi section "${section}" is missing key "${key}"`
-        );
-        assert.ok(
-          typeof translations.hi[section][key] === 'string' &&
-            translations.hi[section][key].length > 0,
-          `Hindi translation for ${section}.${key} is non-empty`
-        );
+      assert.deepStrictEqual(
+        Object.keys(hiValue).sort(),
+        Object.keys(enValue).sort(),
+        `English and Hindi keys match at ${path}`,
+      );
+
+      for (const [key, enEntry] of Object.entries(enValue)) {
+        const hiEntry = hiValue[key];
+        const entryPath = `${path}.${key}`;
+
+        if (enEntry !== null && typeof enEntry === "object") {
+          checkNestedParity(enEntry, hiEntry, entryPath);
+        } else {
+          assert.ok(
+            typeof hiEntry === "string" && hiEntry.trim().length > 0,
+            `Hindi translation for ${entryPath} is non-empty`,
+          );
+        }
       }
+    }
+
+    for (const section of enSections) {
+      checkNestedParity(
+        translations.en[section],
+        translations.hi[section],
+        section,
+      );
     }
   });
 

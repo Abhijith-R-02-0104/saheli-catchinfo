@@ -79,7 +79,8 @@ export const translations = {
       medicalDisclaimer:
         "Saheli provides health tracking and educational resources, not medical diagnosis. In an emergency, please contact 112 or 108.",
       emergencyHelpline: "Emergency Helpline: 112 or 108 (India)",
-      teleManasNotice: "National Tele-Mental Health Helpline: 14416 (24x7, Toll-Free)",
+      teleManasNotice:
+        "National Tele-Mental Health Helpline: 14416 (24x7, Toll-Free)",
       days: "days",
       day: "day",
       hours: "hours",
@@ -100,7 +101,8 @@ export const translations = {
         "Replaces menstrual terms, period references, and icons with subtle everyday symbols",
       readAloud: "Read Aloud (Text to Speech)",
       petCompanion: "Pet Companion",
-      petCompanionDesc: "Enable an optional calming virtual pet companion in the sanctuary",
+      petCompanionDesc:
+        "Enable an optional calming virtual pet companion in the sanctuary",
       appearance: "Appearance",
       themeLight: "Light",
       themeDark: "Dark",
@@ -110,14 +112,11 @@ export const translations = {
     },
 
     errors: {
-      storageFull:
-        "Storage is full. Please clear space or export your data.",
+      storageFull: "Storage is full. Please clear space or export your data.",
       storageError:
         "Could not save to local storage. Changes are kept in memory.",
-      corruptedData:
-        "Saved data appears corrupted and could not be loaded.",
-      invalidDate:
-        "Please provide a valid calendar date in YYYY-MM-DD format.",
+      corruptedData: "Saved data appears corrupted and could not be loaded.",
+      invalidDate: "Please provide a valid calendar date in YYYY-MM-DD format.",
       requiredField: "This field is required.",
       invalidJson: "The provided file is not valid JSON.",
       importFailed: "Failed to import backup file.",
@@ -125,12 +124,13 @@ export const translations = {
 
     emptyStates: {
       noLogs: "No logs recorded for this day yet.",
-      noInsights:
-        "More cycle logs are needed to show recurring patterns.",
+      noInsights: "More cycle logs are needed to show recurring patterns.",
       noFindings: "No active safety concerns detected.",
       noSearchResults: "No results matched your search.",
-      noNotes: "Your personal space is quiet. Write a journal thought or doctor question.",
-      welcomeFirstTime: "Welcome to Saheli! Begin by logging your period start date or exploring health guides.",
+      noNotes:
+        "Your personal space is quiet. Write a journal thought or doctor question.",
+      welcomeFirstTime:
+        "Welcome to Saheli! Begin by logging your period start date or exploring health guides.",
     },
 
     logForm: {
@@ -221,7 +221,8 @@ export const translations = {
       phaseLuteal: "Luteal Phase",
       logFirstPeriod: "Log your first period to activate the cycle wheel.",
       learnMore: "Learn About This Phase",
-      cycleWheelDisclaimer: "Estimates are approximate and cannot be used for contraception.",
+      cycleWheelDisclaimer:
+        "Estimates are approximate and cannot be used for contraception.",
       quickCheckIn: "Quick Check-in",
       completedToday: "Logged for today ✓",
     },
@@ -236,7 +237,8 @@ export const translations = {
       viewLog: "View Details",
       editLog: "Edit Log",
       logThisDay: "Log this day",
-      noLogSelected: "Select any date on the calendar to see recorded flow, symptoms, and private notes.",
+      noLogSelected:
+        "Select any date on the calendar to see recorded flow, symptoms, and private notes.",
       daysCount: "days logged",
     },
 
@@ -252,7 +254,8 @@ export const translations = {
       regular: "Regular",
       irregular: "Irregular",
       insufficientData: "More data needed",
-      cycleLengthNote: "Based on consecutive period start dates in your records.",
+      cycleLengthNote:
+        "Based on consecutive period start dates in your records.",
       cycleVariation: "Variation range",
     },
 
@@ -260,7 +263,8 @@ export const translations = {
       title: "When to See a Doctor",
       safetyNotice: "Health Observations",
       urgentBanner: "Urgent Warning Sign Detected",
-      urgentNotice: "Please seek medical attention immediately. You can reach emergency services at 112 or 108.",
+      urgentNotice:
+        "Please seek medical attention immediately. You can reach emergency services at 112 or 108.",
       visitPrep: "Prepare for My Visit",
       printSummary: "Print Visit Summary",
       doctorNotes: "Questions & Notes for Doctor",
@@ -268,7 +272,8 @@ export const translations = {
       copySummary: "Copy Summary",
       selfReportedTitle: "Self-Check Symptoms",
       teleManasTitle: "Mental Health Support",
-      teleManasDesc: "If you are feeling overwhelmed, hopeless, or distressed, free confidential help is available 24/7.",
+      teleManasDesc:
+        "If you are feeling overwhelmed, hopeless, or distressed, free confidential help is available 24/7.",
       callTeleManas: "Call Tele-MANAS (14416)",
     },
 
@@ -327,12 +332,14 @@ export const translations = {
       fallbackText:
         "We could not find an answer to that question. Please consult a qualified healthcare provider for personalized medical guidance.",
       allCategories: "All Topics",
-      emergencyAlert: "In case of severe acute pain, heavy hemorrhage, or mental health emergency, seek immediate medical aid.",
+      emergencyAlert:
+        "In case of severe acute pain, heavy hemorrhage, or mental health emergency, seek immediate medical aid.",
     },
 
     calculators: {
       title: "Cycle Calculators Hub",
-      subtitle: "Helpful wellness estimators based on verified clinical guidelines.",
+      subtitle:
+        "Helpful wellness estimators based on verified clinical guidelines.",
       periodEstimator: "Period Date Estimator",
       cycleLengthCalc: "Cycle Length Calculator",
       phaseEstimator: "Menstrual Phase Estimator",
@@ -343,14 +350,16 @@ export const translations = {
       resultEstimate: "Estimated Next Period",
       fertileWindow: "Estimated Fertile Window",
       ovulationDay: "Estimated Ovulation Day",
-      disclaimer: "Not for contraception. Biological variations and stress frequently alter cycle timing.",
+      disclaimer:
+        "Not for contraception. Biological variations and stress frequently alter cycle timing.",
       calculateNow: "Calculate",
       useMyData: "Autofill from my logs",
     },
 
     myspace: {
       title: "My Space — Private Notes & Journal",
-      subtitle: "A completely local, calming sanctuary for your thoughts and questions.",
+      subtitle:
+        "A completely local, calming sanctuary for your thoughts and questions.",
       allEntries: "All Entries",
       journal: "Journal",
       doctorQuestions: "Doctor Questions",
@@ -371,7 +380,8 @@ export const translations = {
 
     pet: {
       title: "My Pet Companion",
-      subtitle: "A gentle, stress-free virtual companion in your wellness sanctuary.",
+      subtitle:
+        "A gentle, stress-free virtual companion in your wellness sanctuary.",
       choosePet: "Choose Your Companion",
       petBunny: "Bunny (Khargosh)",
       petKitten: "Kitten (Billi)",
@@ -395,10 +405,63 @@ export const translations = {
       snacksCount: "Snacks",
       pickSnackBtn: "Pick Fresh Berry 🍓",
       pickSnackDesc: "Gentle treats with love — no streaks or pressure.",
-      sleepingNotice: "Your companion is sound asleep. Wake them gently to play or snack!",
-      touchHint: "Tap or click directly on your companion to share gentle pets!",
+      sleepingNotice:
+        "Your companion is sound asleep. Wake them gently to play or snack!",
+      touchHint:
+        "Tap or click directly on your companion to share gentle pets!",
       renameHint: "Click to rename your companion",
       noSnacks: "All snacks enjoyed! Tap 'Pick Fresh Berry' to refresh treats.",
+    },
+
+    redflags: {
+      prolongedPeriod: {
+        title: "Bleeding lasting longer than usual",
+      },
+      heavyBleeding: {
+        title: "Heavy menstrual bleeding",
+      },
+      outOfRangeCycles: {
+        title: "Cycles repeatedly outside the usual range",
+      },
+      noPeriod: {
+        title: "No period for 90 days",
+      },
+      bleedingBetweenPeriods: {
+        title: "Bleeding between periods",
+      },
+      bleedingAfterSex: {
+        title: "Bleeding after sex",
+      },
+      disablingPain: {
+        title: "Pain affecting daily activities",
+      },
+      heavyBleedingWithSymptoms: {
+        title: "Heavy bleeding with other symptoms",
+      },
+      noFirstPeriod: {
+        title: "No first period by age 15",
+        why: "A healthcare professional can assess possible reasons and whether evaluation is needed.",
+      },
+      suddenCycleChange: {
+        title: "Sudden change in your cycle",
+        why: "A noticeable change can have several causes and is worth discussing with a healthcare professional.",
+      },
+      postMenopauseBleeding: {
+        title: "Bleeding after menopause",
+        why: "Bleeding after menopause should be assessed promptly by a healthcare professional.",
+      },
+      urgentSeverePain: {
+        title: "Sudden or severe lower abdominal pain",
+      },
+      urgentHeavyBleeding: {
+        title: "Heavy bleeding with dizziness or fainting",
+      },
+      urgentPossiblePregnancy: {
+        title: "Possible pregnancy with bleeding or severe pain",
+      },
+      urgent: {
+        nextStep: "Seek emergency medical care now.",
+      },
     },
 
     settings: {
@@ -407,13 +470,15 @@ export const translations = {
       trackedSymptoms: "Tracked Symptoms",
       dataManagement: "Data & Privacy",
       exportDescription: "Download a local JSON backup of your records.",
-      importDescription: "Restore records from a previously exported JSON backup.",
+      importDescription:
+        "Restore records from a previously exported JSON backup.",
       resetTitle: "Reset All Data",
       resetWarning:
         "This will permanently remove all saved health logs and settings from this browser.",
       exportBtn: "Export Backup (JSON)",
       importBtn: "Import Backup (JSON)",
-      privacyPromise: "Saheli never uploads or transmits your health information. Everything stays solely on this device.",
+      privacyPromise:
+        "Saheli never uploads or transmits your health information. Everything stays solely on this device.",
     },
 
     landing: {
@@ -569,7 +634,8 @@ export const translations = {
       medicalDisclaimer:
         "सहेली स्वास्थ्य ट्रैकिंग और शैक्षणिक जानकारी प्रदान करती है, चिकित्सकीय निदान नहीं। आपातकाल में कृपया 112 या 108 पर संपर्क करें।",
       emergencyHelpline: "आपातकालीन हेल्पलाइन: 112 या 108 (भारत)",
-      teleManasNotice: "राष्ट्रीय मानसिक स्वास्थ्य हेल्पलाइन: 14416 (24x7, टोल-फ्री)",
+      teleManasNotice:
+        "राष्ट्रीय मानसिक स्वास्थ्य हेल्पलाइन: 14416 (24x7, टोल-फ्री)",
       days: "दिन",
       day: "दिन",
       hours: "घंटे",
@@ -604,10 +670,8 @@ export const translations = {
         "स्टोरेज भर गया है। कृपया जगह खाली करें या डेटा निर्यात करें।",
       storageError:
         "लोकल स्टोरेज में सहेजा नहीं जा सका। बदलाव मेमोरी में सुरक्षित हैं।",
-      corruptedData:
-        "सहेजा गया डेटा दूषित प्रतीत होता है और लोड नहीं हो सका।",
-      invalidDate:
-        "कृपया YYYY-MM-DD प्रारूप में एक मान्य तारीख दर्ज करें।",
+      corruptedData: "सहेजा गया डेटा दूषित प्रतीत होता है और लोड नहीं हो सका।",
+      invalidDate: "कृपया YYYY-MM-DD प्रारूप में एक मान्य तारीख दर्ज करें।",
       requiredField: "यह फ़ील्ड आवश्यक है।",
       invalidJson: "दी गई फ़ाइल मान्य JSON नहीं है।",
       importFailed: "बैकअप फ़ाइल आयात करने में विफल।",
@@ -620,7 +684,8 @@ export const translations = {
       noFindings: "कोई सक्रिय सुरक्षा चिंता नहीं पाई गई।",
       noSearchResults: "आपकी खोज से कोई परिणाम नहीं मिला।",
       noNotes: "आपका निजी कोना शांत है। कोई विचार या डॉक्टर के लिए सवाल लिखें।",
-      welcomeFirstTime: "सहेली में आपका स्वागत है! अपनी पहली माहवारी की शुरुआत दर्ज करके साइकिल पहिया सक्रिय करें।",
+      welcomeFirstTime:
+        "सहेली में आपका स्वागत है! अपनी पहली माहवारी की शुरुआत दर्ज करके साइकिल पहिया सक्रिय करें।",
     },
 
     logForm: {
@@ -709,9 +774,11 @@ export const translations = {
       phaseFollicular: "फॉलिक्युलर चरण",
       phaseOvulation: "ओव्यूलेशन खिड़की",
       phaseLuteal: "ल्यूटियल चरण",
-      logFirstPeriod: "साइकिल चक्र सक्रिय करने के लिए अपनी पहली माहवारी दर्ज करें।",
+      logFirstPeriod:
+        "साइकिल चक्र सक्रिय करने के लिए अपनी पहली माहवारी दर्ज करें।",
       learnMore: "इस चरण के बारे में जानें",
-      cycleWheelDisclaimer: "अनुमान सांकेतिक हैं और गर्भनिरोध के रूप में उपयोग नहीं किए जा सकते।",
+      cycleWheelDisclaimer:
+        "अनुमान सांकेतिक हैं और गर्भनिरोध के रूप में उपयोग नहीं किए जा सकते।",
       quickCheckIn: "त्वरित चेक-इन",
       completedToday: "आज का रिकॉर्ड दर्ज है ✓",
     },
@@ -726,7 +793,8 @@ export const translations = {
       viewLog: "विवरण देखें",
       editLog: "लॉग संपादित करें",
       logThisDay: "इस दिन का लॉग करें",
-      noLogSelected: "प्रवाह, लक्षण और निजी नोट्स देखने के लिए कैलेंडर पर किसी भी तारीख को चुनें।",
+      noLogSelected:
+        "प्रवाह, लक्षण और निजी नोट्स देखने के लिए कैलेंडर पर किसी भी तारीख को चुनें।",
       daysCount: "दिन दर्ज",
     },
 
@@ -742,7 +810,8 @@ export const translations = {
       regular: "नियमित",
       irregular: "अनियमित",
       insufficientData: "और डेटा आवश्यक है",
-      cycleLengthNote: "आपके दर्ज किए गए लगातार माहवारी शुरू होने की तारीखों पर आधारित।",
+      cycleLengthNote:
+        "आपके दर्ज किए गए लगातार माहवारी शुरू होने की तारीखों पर आधारित।",
       cycleVariation: "भिन्नता सीमा",
     },
 
@@ -750,7 +819,8 @@ export const translations = {
       title: "डॉक्टर से कब मिलें",
       safetyNotice: "स्वास्थ्य अवलोकन",
       urgentBanner: "तत्काल चेतावनी संकेत पाया गया",
-      urgentNotice: "कृपया तुरंत चिकित्सीय सहायता लें। आप 112 या 108 पर आपातकालीन सेवाओं से संपर्क कर सकते हैं।",
+      urgentNotice:
+        "कृपया तुरंत चिकित्सीय सहायता लें। आप 112 या 108 पर आपातकालीन सेवाओं से संपर्क कर सकते हैं।",
       visitPrep: "मुलाकात की तैयारी",
       printSummary: "मुलाकात सारांश प्रिंट करें",
       doctorNotes: "डॉक्टर के लिए सवाल व नोट्स",
@@ -758,7 +828,8 @@ export const translations = {
       copySummary: "सारांश कॉपी करें",
       selfReportedTitle: "स्वयं जांचें लक्षण",
       teleManasTitle: "मानसिक स्वास्थ्य सहयोग",
-      teleManasDesc: "यदि आप तनाव, चिंता या अत्यधिक उदासी महसूस कर रहे हैं, तो 24/7 निःशुल्क सहायता उपलब्ध है।",
+      teleManasDesc:
+        "यदि आप तनाव, चिंता या अत्यधिक उदासी महसूस कर रहे हैं, तो 24/7 निःशुल्क सहायता उपलब्ध है।",
       callTeleManas: "टेली-मानस को कॉल करें (14416)",
     },
 
@@ -817,7 +888,8 @@ export const translations = {
       fallbackText:
         "हमें इस प्रश्न का उत्तर नहीं मिला। व्यक्तिगत चिकित्सीय सलाह के लिए कृपया योग्य स्वास्थ्य सेवा प्रदाता से परामर्श लें।",
       allCategories: "सभी विषय",
-      emergencyAlert: "गंभीर दर्द, अत्यधिक रक्तस्राव या मानसिक तनाव की स्थिति में तुरंत आपातकालीन सहायता लें।",
+      emergencyAlert:
+        "गंभीर दर्द, अत्यधिक रक्तस्राव या मानसिक तनाव की स्थिति में तुरंत आपातकालीन सहायता लें।",
     },
 
     calculators: {
@@ -833,7 +905,8 @@ export const translations = {
       resultEstimate: "अनुमानित अगली माहवारी",
       fertileWindow: "अनुमानित गर्भधारण खिड़की",
       ovulationDay: "अनुमानित ओव्यूलेशन दिवस",
-      disclaimer: "गर्भनिरोधक के रूप में उपयोग न करें। जैविक बदलावों और तनाव से समय बदल सकता है।",
+      disclaimer:
+        "गर्भनिरोधक के रूप में उपयोग न करें। जैविक बदलावों और तनाव से समय बदल सकता है।",
       calculateNow: "गणना करें",
       useMyData: "मेरे लॉग से भरें",
     },
@@ -885,10 +958,62 @@ export const translations = {
       snacksCount: "नाश्ता",
       pickSnackBtn: "ताज़ा बेरी लें 🍓",
       pickSnackDesc: "प्यार से भरपूर नाश्ता — बिना किसी तनाव के।",
-      sleepingNotice: "आपका साथी गहरी नींद में है। खेलने या खिलाने के लिए पहले जगाएं!",
+      sleepingNotice:
+        "आपका साथी गहरी नींद में है। खेलने या खिलाने के लिए पहले जगाएं!",
       touchHint: "प्यार से दुलारने के लिए साथी पर सीधे टैप या क्लिक करें!",
       renameHint: "नाम बदलने के लिए क्लिक करें",
       noSnacks: "सारा नाश्ता समाप्त! नए फल लेने के लिए 'ताज़ा बेरी लें' दबाएं।",
+    },
+
+    redflags: {
+      prolongedPeriod: {
+        title: "सामान्य से अधिक समय तक रक्तस्राव",
+      },
+      heavyBleeding: {
+        title: "मासिक धर्म में बहुत अधिक रक्तस्राव",
+      },
+      outOfRangeCycles: {
+        title: "बार-बार सामान्य सीमा से बाहर मासिक चक्र",
+      },
+      noPeriod: {
+        title: "90 दिनों तक मासिक धर्म न होना",
+      },
+      bleedingBetweenPeriods: {
+        title: "मासिक धर्म के बीच रक्तस्राव",
+      },
+      bleedingAfterSex: {
+        title: "यौन संबंध के बाद रक्तस्राव",
+      },
+      disablingPain: {
+        title: "दैनिक गतिविधियों को प्रभावित करने वाला दर्द",
+      },
+      heavyBleedingWithSymptoms: {
+        title: "अन्य लक्षणों के साथ भारी रक्तस्राव",
+      },
+      noFirstPeriod: {
+        title: "15 वर्ष की आयु तक पहली माहवारी न आना",
+        why: "स्वास्थ्य विशेषज्ञ संभावित कारणों का आकलन कर सकते हैं और बता सकते हैं कि जाँच की आवश्यकता है या नहीं।",
+      },
+      suddenCycleChange: {
+        title: "मासिक चक्र में अचानक बदलाव",
+        why: "अचानक बदलाव के कई कारण हो सकते हैं। इस बारे में स्वास्थ्य विशेषज्ञ से बात करना उचित है।",
+      },
+      postMenopauseBleeding: {
+        title: "रजोनिवृत्ति के बाद रक्तस्राव",
+        why: "रजोनिवृत्ति के बाद रक्तस्राव की जाँच स्वास्थ्य विशेषज्ञ से जल्द करवानी चाहिए।",
+      },
+      urgentSeverePain: {
+        title: "पेट के निचले हिस्से में अचानक या तेज दर्द",
+      },
+      urgentHeavyBleeding: {
+        title: "चक्कर या बेहोशी के साथ भारी रक्तस्राव",
+      },
+      urgentPossiblePregnancy: {
+        title: "संभावित गर्भावस्था के साथ रक्तस्राव या तेज दर्द",
+      },
+      urgent: {
+        nextStep: "अभी आपातकालीन चिकित्सा सहायता लें।",
+      },
     },
 
     settings: {
@@ -897,13 +1022,15 @@ export const translations = {
       trackedSymptoms: "ट्रैक किए जाने वाले लक्षण",
       dataManagement: "डेटा व गोपनीयता",
       exportDescription: "अपने रिकॉर्ड का लोकल JSON बैकअप डाउनलोड करें।",
-      importDescription: "पहले निर्यात किए गए बैकअप से रिकॉर्ड पुनर्स्थापित करें।",
+      importDescription:
+        "पहले निर्यात किए गए बैकअप से रिकॉर्ड पुनर्स्थापित करें।",
       resetTitle: "सभी डेटा रीसेट करें",
       resetWarning:
         "यह इस ब्राउज़र से आपके सभी सहेजे गए स्वास्थ्य रिकॉर्ड और सेटिंग्स को स्थायी रूप से हटा देगा।",
       exportBtn: "बैकअप निर्यात करें (JSON)",
       importBtn: "बैकअप आयात करें (JSON)",
-      privacyPromise: "सहेली कभी भी आपका स्वास्थ्य डेटा अपलोड या प्रसारित नहीं करती है। सब कुछ केवल इसी डिवाइस पर रहता है।",
+      privacyPromise:
+        "सहेली कभी भी आपका स्वास्थ्य डेटा अपलोड या प्रसारित नहीं करती है। सब कुछ केवल इसी डिवाइस पर रहता है।",
     },
 
     landing: {
@@ -1020,11 +1147,22 @@ export function getTranslation(lang = "en", dotPath, fallback = "") {
     return fallback;
   }
 
-  const [section, key] = dotPath.split(".");
-  if (!section || !key) {
-    return fallback;
+  const selectedLang = lang === "hi" ? "hi" : "en";
+  const parts = dotPath.split(".");
+
+  function resolvePath(dictionary) {
+    return parts.reduce(
+      (current, part) =>
+        current && typeof current === "object" ? current[part] : undefined,
+      dictionary,
+    );
   }
 
-  const result = t(lang, section, key);
-  return result !== key ? result : fallback || key;
+  const translated = resolvePath(translations[selectedLang]);
+  if (typeof translated === "string") return translated;
+
+  const englishFallback = resolvePath(translations.en);
+  if (typeof englishFallback === "string") return englishFallback;
+
+  return fallback || dotPath;
 }
