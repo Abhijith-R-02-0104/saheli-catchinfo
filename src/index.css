@@ -306,6 +306,13 @@
   border-color: var(--line-strong) !important;
 }
 
+/* Accessible Form Placeholder Contrast Standard */
+input::placeholder,
+textarea::placeholder {
+  color: var(--muted);
+  opacity: 0.85;
+}
+
 /* Accessible Font Sizing - scales rem-based Tailwind sizes app-wide */
 html[data-text-size="normal"],
 :root[data-text-size="normal"],
