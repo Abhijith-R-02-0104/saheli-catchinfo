@@ -14,6 +14,7 @@ import { AskView } from "./components/views/AskView.jsx";
 import { SettingsView } from "./components/views/SettingsView.jsx";
 import { CalculatorsView } from "./components/views/CalculatorsView.jsx";
 import { MySpaceView } from "./components/views/MySpaceView.jsx";
+import { SparkleCursor } from "./components/common/SparkleCursor.jsx";
 
 const PetView = lazy(() =>
   import("./components/views/PetView.jsx").then((m) => ({ default: m.PetView })),
@@ -87,20 +88,32 @@ export default function App() {
   // Public Landing Page view at "/"
   if (location.pathname === "/") {
     return (
-      <LandingPage
-        onOpenApp={(targetTab = "today") => {
-          navigate(targetTab === "today" ? "/today" : `/${targetTab}`);
-        }}
-      />
+      <>
+        <SparkleCursor />
+        <LandingPage
+          onOpenApp={(targetTab = "today", options = {}) => {
+            if (targetTab === "log" && options?.isFirstPeriod) {
+              navigate("/log?mode=first-period", {
+                state: { isFirstPeriod: true, returnTo: "/" },
+              });
+              return;
+            }
+            const targetPath = targetTab === "today" ? "/today" : `/${targetTab}`;
+            navigate(targetPath, { state: options });
+          }}
+        />
+      </>
     );
   }
 
   return (
-    <Layout
-      activeTab={activeTab}
-      onSelectTab={handleSelectTab}
-      onNavigateToLanding={() => navigate("/")}
-    >
+    <>
+      <SparkleCursor />
+      <Layout
+        activeTab={activeTab}
+        onSelectTab={handleSelectTab}
+        onNavigateToLanding={() => navigate("/")}
+      >
       <Routes>
         <Route path="/app" element={<Navigate to="/today" replace />} />
         <Route path="/app/today" element={<Navigate to="/today" replace />} />
@@ -116,7 +129,21 @@ export default function App() {
         />
         <Route
           path="/log"
-          element={<LogView initialDate={selectedDateForLog} />}
+          element={
+            <LogView
+              initialDate={selectedDateForLog}
+              onNavigateBack={() => {
+                if (location.state?.returnTo) {
+                  navigate(location.state.returnTo);
+                } else if (location.search?.includes("mode=first-period")) {
+                  navigate("/");
+                } else {
+                  navigate("/today");
+                }
+              }}
+              onSavedFirstPeriod={() => navigate("/")}
+            />
+          }
         />
         <Route
           path="/calendar"
@@ -208,5 +235,6 @@ export default function App() {
         )}
       </aside>
     </Layout>
+    </>
   );
 }

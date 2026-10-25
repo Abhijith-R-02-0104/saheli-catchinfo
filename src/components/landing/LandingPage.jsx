@@ -1,6 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useAppData } from "../../context/useAppData.js";
 import { useTranslation } from "../../hooks/useTranslation.js";
+import { calculateCyclePrediction } from "../../lib/cycle.js";
+import { getTodayLocalDate, daysBetween, addDays, isValidDateOnly } from "../../lib/dates.js";
+import heroArtwork from "../../assets/hero-artwork.jpg";
+import { SaheliHiddenHeartSymbol, SaheliLogo } from "../common/SaheliLogo.jsx";
 import {
   IconLotus,
   IconArrowRight,
@@ -22,11 +26,24 @@ import {
   IconAsk,
 } from "../common/Icons.jsx";
 
+function formatFriendlyDate(dateStr, lang) {
+  if (!dateStr) return "";
+  try {
+    const [y, m, d] = dateStr.split("-").map(Number);
+    const dateObj = new Date(y, m - 1, d);
+    return dateObj.toLocaleDateString(lang === "hi" ? "hi-IN" : "en-US", {
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
 export function LandingPage({ onOpenApp }) {
   const { appData, updateSettings } = useAppData();
   const { lang, t } = useTranslation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [previewPhase, setPreviewPhase] = useState("follicular");
 
   const isHighContrast = Boolean(appData?.settings?.highContrast);
   const textSize = appData?.settings?.textSize || "normal";
@@ -69,62 +86,151 @@ export function LandingPage({ onOpenApp }) {
     }
   }
 
-  const cyclePhases = [
-    {
-      id: "menstrual",
-      nameEn: "Menstrual Phase",
-      nameHi: "माहवारी चरण",
-      days: "Days 1 – 5",
-      tone: "Rest & Hydrate",
-      toneHi: "विश्राम और जलयोजन",
-      descEn:
-        "Your uterine lining sheds. Estrogen and progesterone are at baseline. Prioritize warm gentle meals, restorative rest, and comfortable pacing.",
-      descHi:
-        "एस्ट्रोजन और प्रोजेस्टेरोन का स्तर न्यूनतम होता है। गर्म पौष्टिक भोजन, आराम और शरीर की गति को धीमा रखें।",
-      badgeClass: "bg-[#F7E3EC] text-[#79516F] border-[#E9B7C8] dark:bg-[#3C2333] dark:text-[#E8A8BF] dark:border-[#543048]",
-    },
-    {
-      id: "follicular",
-      nameEn: "Follicular Phase",
-      nameHi: "फॉलिक्युलर चरण",
-      days: "Days 6 – 13",
-      tone: "Rising Energy",
-      toneHi: "ऊर्जा का संचार",
-      descEn:
-        "FSH prompts follicles to mature and estrogen rises steadily. Mental focus, stamina, and curiosity naturally elevate as your body prepares for ovulation.",
-      descHi:
-        "एस्ट्रोजन बढ़ता है। मानसिक एकाग्रता, ऊर्जा और स्फूर्ति स्वाभाविक रूप से बढ़ती है जब शरीर ओव्यूलेशन की तैयारी करता है।",
-      badgeClass: "bg-[#DCEBDD] text-[#3F6344] border-[#A2C8A5] dark:bg-[#1E3322] dark:text-[#C4E2C7] dark:border-[#2C4830]",
-    },
-    {
-      id: "ovulation",
-      nameEn: "Ovulation Window",
-      nameHi: "ओव्यूलेशन खिड़की",
-      days: "Days 14 – 16",
-      tone: "Peak Vitality",
-      toneHi: "चरम सक्रियता",
-      descEn:
-        "LH surge triggers the release of a mature egg. Energy and social confidence peak. (Note: calculated estimates are educational, not contraception).",
-      descHi:
-        "एलएच हार्मोन के बढ़ने से परिपक्व अंडाणु निकलता है। ऊर्जा चरम पर होती है। (नोट: अनुमान शैक्षणिक हैं, गर्भनिरोधक नहीं)।",
-      badgeClass: "bg-[#FFF8EB] text-[#854D0E] border-[#FCD34D] dark:bg-[#2E2412] dark:text-[#FCD34D] dark:border-[#4D3B1E]",
-    },
-    {
-      id: "luteal",
-      nameEn: "Luteal Phase",
-      nameHi: "ल्यूटियल चरण",
-      days: "Days 17 – 28",
-      tone: "Nurture & Ground",
-      toneHi: "संरक्षण और स्थिरता",
-      descEn:
-        "Progesterone rises then tapers. Your metabolic rate gently climbs. Support your nervous system with magnesium-rich foods and grounding mindfulness.",
-      descHi:
-        "प्रोजेस्टेरोन बढ़ता है फिर घटता है। मैग्नीशियम युक्त आहार और ध्यान के माध्यम से अपने तंत्रिका तंत्र को पोषण दें।",
-      badgeClass: "bg-[#F2E8F0] text-[#79516F] border-[#DECED9] dark:bg-[#34263E] dark:text-[#D9A4C7] dark:border-[#543F61]",
-    },
-  ];
+  // --- Real Cycle Data Connection ---
+  const today = getTodayLocalDate();
 
-  const activePhaseData = cyclePhases.find((p) => p.id === previewPhase) || cyclePhases[1];
+  const entries = useMemo(() => {
+    return Object.entries(appData?.logsByDate || {})
+      .filter(([d, log]) => isValidDateOnly(d) && log?.period?.isPeriod === true)
+      .sort(([a], [b]) => a.localeCompare(b));
+  }, [appData?.logsByDate]);
+
+  const periodStarts = useMemo(() => {
+    const datesSet = new Set(entries.map(([d]) => d));
+    return entries
+      .map(([d]) => d)
+      .filter((date) => !datesSet.has(addDays(date, -1)));
+  }, [entries]);
+
+  const hasPeriodRecords = periodStarts.length > 0;
+
+  const cycleAnalysis = useMemo(() => {
+    if (!hasPeriodRecords) return null;
+    try {
+      return calculateCyclePrediction(periodStarts);
+    } catch {
+      return null;
+    }
+  }, [periodStarts, hasPeriodRecords]);
+
+  const latestPeriodStart = hasPeriodRecords
+    ? periodStarts[periodStarts.length - 1]
+    : null;
+
+  let currentCycleDay = null;
+  if (latestPeriodStart) {
+    const diff = daysBetween(latestPeriodStart, today);
+    if (diff >= 0) {
+      currentCycleDay = diff + 1;
+    }
+  }
+
+  const medianCycleLen = cycleAnalysis?.medianCycleLength
+    ? Math.round(cycleAnalysis.medianCycleLength)
+    : 28;
+
+  // Determine current active phase strictly based on actual data
+  let currentPhase = null;
+  if (currentCycleDay !== null) {
+    if (currentCycleDay <= 5) {
+      currentPhase = {
+        id: "menstrual",
+        nameEn: "Menstrual Phase",
+        nameHi: "माहवारी चरण",
+        days: "Days 1 – 5",
+        status: "Active Phase",
+        toneEn: "Rest & Hydrate",
+        toneHi: "विश्राम और जलयोजन",
+        descEn:
+          "Your uterine lining sheds. Estrogen and progesterone are at baseline. Prioritize warm gentle meals, restorative rest, and comfortable pacing.",
+        descHi:
+          "एस्ट्रोजन और प्रोजेस्टेरोन का स्तर न्यूनतम होता है। गर्म पौष्टिक भोजन, आराम और शरीर की गति को धीमा रखें।",
+        badgeClass:
+          "bg-[#F7E3EC] text-[#79516F] border-[#E9B7C8] dark:bg-[#3C2333] dark:text-[#E8A8BF] dark:border-[#543048]",
+        tipEn:
+          "WHO & ACOG guidance: Stay well hydrated, prioritize iron-rich warm meals, and give yourself unhurried rest.",
+        tipHi:
+          "पर्याप्त पानी पिएं, गर्म व आयरन युक्त पौष्टिक आहार लें और शरीर को पर्याप्त विश्राम दें।",
+      };
+    } else if (currentCycleDay <= 13) {
+      currentPhase = {
+        id: "follicular",
+        nameEn: "Follicular Phase",
+        nameHi: "फॉलिक्युलर चरण",
+        days: "Days 6 – 13",
+        status: "Active Phase",
+        toneEn: "Rising Energy & Focus",
+        toneHi: "ऊर्जा और एकाग्रता",
+        descEn:
+          "FSH prompts follicles to mature and estrogen rises steadily. Mental focus, stamina, and curiosity naturally elevate as your body prepares for ovulation.",
+        descHi:
+          "एस्ट्रोजन बढ़ता है। मानसिक एकाग्रता, ऊर्जा और स्फूर्ति स्वाभाविक रूप से बढ़ती है जब शरीर ओव्यूलेशन की तैयारी करता है।",
+        badgeClass:
+          "bg-[#DCEBDD] text-[#3F6344] border-[#A2C8A5] dark:bg-[#1E3322] dark:text-[#C4E2C7] dark:border-[#2C4830]",
+        tipEn:
+          "Rising estrogen supports mental focus and endurance. An uplifting window for physical movement and creative learning.",
+        tipHi:
+          "बढ़ता एस्ट्रोजन मानसिक एकाग्रता और ऊर्जा को बढ़ाता है। नई चीजें सीखने और सक्रिय रहने का उत्तम समय।",
+      };
+    } else if (currentCycleDay <= 16) {
+      currentPhase = {
+        id: "ovulation",
+        nameEn: "Ovulation Window",
+        nameHi: "ओव्यूलेशन खिड़की",
+        days: "Days 14 – 16",
+        status: "Active Phase",
+        toneEn: "Peak Vitality",
+        toneHi: "चरम सक्रियता",
+        descEn:
+          "LH surge triggers the release of a mature egg. Natural vitality and confidence peak. (Note: calculated estimates are educational, not contraception).",
+        descHi:
+          "एलएच हार्मोन के बढ़ने से परिपक्व अंडाणु निकलता है। ऊर्जा चरम पर होती है। (नोट: अनुमान शैक्षणिक हैं, गर्भनिरोधक नहीं)।",
+        badgeClass:
+          "bg-[#FFF8EB] text-[#854D0E] border-[#FCD34D] dark:bg-[#2E2412] dark:text-[#FCD34D] dark:border-[#4D3B1E]",
+        tipEn:
+          "Channel peak vitality while maintaining restful sleep and generous hydration.",
+        tipHi:
+          "अपनी सकारात्मक ऊर्जा का सदुपयोग करें और भरपूर पानी पीते हुए नींद का संतुलन बनाए रखें।",
+      };
+    } else {
+      currentPhase = {
+        id: "luteal",
+        nameEn: "Luteal Phase",
+        nameHi: "ल्यूटियल चरण",
+        days: `Days 17 – ${medianCycleLen}`,
+        status: "Active Phase",
+        toneEn: "Nurture & Ground",
+        toneHi: "संरक्षण और स्थिरता",
+        descEn:
+          "Progesterone rises then tapers. Your metabolic rate gently climbs. Support your nervous system with magnesium-rich foods and grounding mindfulness.",
+        descHi:
+          "प्रोजेस्टेरोन बढ़ता है फिर घटता है। मैग्नीशियम युक्त आहार और ध्यान के माध्यम से अपने तंत्रिका तंत्र को पोषण दें।",
+        badgeClass:
+          "bg-[#F2E8F0] text-[#79516F] border-[#DECED9] dark:bg-[#34263E] dark:text-[#D9A4C7] dark:border-[#543F61]",
+        tipEn:
+          "Incorporate magnesium-rich foods like nuts, pumpkin seeds, and leafy greens to support physical comfort.",
+        tipHi:
+          "शारीरिक सहजता और बेहतर नींद के लिए मेवे, बीज और हरी पत्तेदार सब्जियों को आहार में शामिल करें।",
+      };
+    }
+  }
+
+  // Circular wheel geometry calculations - compact dimensions for balanced viewport height
+  const totalDays = Math.max(21, Math.min(45, medianCycleLen || 28));
+  const safeCurrentDay = currentCycleDay ? Math.min(currentCycleDay, totalDays) : 0;
+  const progressRatio = safeCurrentDay > 0 ? (safeCurrentDay - 1) / totalDays : 0;
+  const pointerAngle = progressRatio * 360 - 90;
+  const pointerRad = (pointerAngle * Math.PI) / 180;
+  const wheelRadius = 50;
+  const wheelCenter = 66;
+  const pointerX = wheelCenter + wheelRadius * Math.cos(pointerRad);
+  const pointerY = wheelCenter + wheelRadius * Math.sin(pointerRad);
+
+  const wheelCircumference = 2 * Math.PI * wheelRadius;
+  const menstrualArc = (5 / totalDays) * wheelCircumference;
+  const follicularArc = (8 / totalDays) * wheelCircumference;
+  const ovulationArc = (3 / totalDays) * wheelCircumference;
+  const lutealArc = ((totalDays - 16) / totalDays) * wheelCircumference;
 
   return (
     <div
@@ -132,69 +238,66 @@ export function LandingPage({ onOpenApp }) {
       data-contrast={isHighContrast ? "high" : "normal"}
       data-text-size={textSize}
       lang={lang}
-      className={`min-h-screen bg-[var(--bg)] text-[var(--ink)] ${
+      className={`min-h-screen bg-[#FBF7F3] dark:bg-[#1B1522] text-[var(--ink)] ${
         resolvedTheme === "dark" ? "dark" : ""
       } font-sans flex flex-col selection:bg-[#E9B7C8] selection:text-[#292536]`}
     >
-      {/* 1. Refined Public Landing Header */}
-      <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[var(--card)]/90 backdrop-blur-md transition-colors">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3 sm:px-6">
+      {/* 1. Floating Pill-Shaped Header */}
+      <div className="sticky top-3 sm:top-5 z-50 px-3 sm:px-6 w-full max-w-6xl mx-auto transition-all">
+        <header className="relative flex items-center justify-between rounded-full border border-[#DECED9]/80 dark:border-[#543F61]/80 bg-white/90 dark:bg-[#281F30]/90 backdrop-blur-md px-4 py-2 sm:px-6 sm:py-2.5 shadow-md shadow-[#292536]/5">
           {/* Brand Left */}
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              className="flex items-center gap-2.5 text-left group focus-visible:outline-2 focus-visible:outline-[var(--plum)] rounded-lg p-0.5"
+              className="group focus-visible:outline-2 focus-visible:outline-[var(--plum)] rounded-full p-0.5 cursor-pointer"
               aria-label="Saheli Home"
             >
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F7E3EC] dark:bg-[#3D2636] border border-[#E9B7C8]/50 text-[var(--plum)] dark:text-[#E8A8BF] shadow-2xs group-hover:scale-105 transition-transform">
-                <IconLotus className="h-5 w-5" aria-hidden="true" />
-              </div>
-              <div>
-                <span className="font-serif text-2xl font-normal tracking-tight text-[var(--ink)] leading-none block">
-                  saheli
-                </span>
-                <span className="text-[10px] text-[var(--muted)] font-medium tracking-wide hidden sm:block">
-                  {t("landing", "brandTagline")}
-                </span>
-              </div>
+              <SaheliLogo variant="horizontal" showTagline={true} />
             </button>
           </div>
 
-          {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-6 text-xs font-semibold text-[var(--muted)]" aria-label="Main Navigation">
+          {/* Desktop Navigation Links (Centred Section with Delicate Line Icons) */}
+          <nav
+            className="hidden md:flex items-center gap-5 lg:gap-7 text-xs font-semibold text-[var(--muted)]"
+            aria-label="Main Navigation"
+          >
             <button
               type="button"
               onClick={() => scrollToSection("features")}
-              className="hover:text-[var(--ink)] transition-colors py-1 focus-visible:outline-2 focus-visible:outline-[var(--plum)] rounded"
+              className="inline-flex items-center gap-1.5 hover:text-[var(--ink)] transition-colors py-1 focus-visible:outline-2 focus-visible:outline-[var(--plum)] rounded-full cursor-pointer"
             >
-              {t("landing", "navFeatures")}
+              <IconSparkles className="h-3.5 w-3.5 text-[var(--plum)] dark:text-[#E8A8BF]" aria-hidden="true" />
+              <span>{t("landing", "navFeatures")}</span>
             </button>
             <button
               type="button"
               onClick={() => scrollToSection("wellness")}
-              className="hover:text-[var(--ink)] transition-colors py-1 focus-visible:outline-2 focus-visible:outline-[var(--plum)] rounded"
+              className="inline-flex items-center gap-1.5 hover:text-[var(--ink)] transition-colors py-1 focus-visible:outline-2 focus-visible:outline-[var(--plum)] rounded-full cursor-pointer"
             >
-              {t("landing", "navWellness")}
+              <IconLotus className="h-3.5 w-3.5 text-[#3F6344] dark:text-[#88C690]" aria-hidden="true" />
+              <span>{t("landing", "navWellness")}</span>
             </button>
             <button
               type="button"
               onClick={() => scrollToSection("privacy")}
-              className="hover:text-[var(--ink)] transition-colors py-1 focus-visible:outline-2 focus-visible:outline-[var(--plum)] rounded"
+              className="inline-flex items-center gap-1.5 hover:text-[var(--ink)] transition-colors py-1 focus-visible:outline-2 focus-visible:outline-[var(--plum)] rounded-full cursor-pointer"
             >
-              {t("landing", "navPrivacy")}
+              <IconShield className="h-3.5 w-3.5 text-[#3F6344] dark:text-[#88C690]" aria-hidden="true" />
+              <span>{t("landing", "navPrivacy")}</span>
             </button>
             <button
               type="button"
               onClick={() => scrollToSection("about")}
-              className="hover:text-[var(--ink)] transition-colors py-1 focus-visible:outline-2 focus-visible:outline-[var(--plum)] rounded"
+              className="inline-flex items-center gap-1.5 hover:text-[var(--ink)] transition-colors py-1 focus-visible:outline-2 focus-visible:outline-[var(--plum)] rounded-full cursor-pointer"
             >
-              {t("landing", "navAbout")}
+              <IconBookOpen className="h-3.5 w-3.5 text-[#854D0E] dark:text-[#FCD34D]" aria-hidden="true" />
+              <span>{t("landing", "navAbout")}</span>
             </button>
           </nav>
 
-          {/* Right Controls: Language Selector & Primary CTA */}
-          <div className="flex items-center gap-3">
+          {/* Right Controls: Bilingual Selector & Muted-Plum CTA */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
             {/* Bilingual Toggle */}
             <div
               role="radiogroup"
@@ -234,11 +337,11 @@ export function LandingPage({ onOpenApp }) {
               </button>
             </div>
 
-            {/* Primary Action Button to enter App */}
+            {/* Muted-Plum Primary CTA to enter App */}
             <button
               type="button"
-              onClick={onOpenApp}
-              className="hidden sm:inline-flex items-center gap-1.5 rounded-2xl bg-[#79516F] dark:bg-[#8D5C82] text-white px-4 py-2 text-xs font-bold hover:bg-[#633E5A] dark:hover:bg-[#A06B95] shadow-xs transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--plum)] cursor-pointer"
+              onClick={() => onOpenApp("today")}
+              className="hidden sm:inline-flex touch-target items-center gap-1.5 rounded-full bg-[#79516F] dark:bg-[#8D5C82] hover:bg-[#633E5A] dark:hover:bg-[#A06B95] text-white px-4 py-2 sm:px-5 sm:py-2.5 text-xs font-bold shadow-xs transition-all hover:translate-y-[-1px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--plum)] cursor-pointer"
             >
               <span>{t("landing", "ctaOpen")}</span>
               <IconArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
@@ -248,52 +351,55 @@ export function LandingPage({ onOpenApp }) {
             <button
               type="button"
               onClick={() => setMobileMenuOpen((open) => !open)}
-              className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-xl border border-[var(--line-strong)] text-[var(--ink)] hover:bg-[var(--card-subtle)] focus-visible:outline-2 focus-visible:outline-[var(--plum)]"
+              className="md:hidden inline-flex items-center justify-center h-9 w-9 rounded-full border border-[var(--line-strong)] text-[var(--ink)] hover:bg-[var(--card-subtle)] focus-visible:outline-2 focus-visible:outline-[var(--plum)] cursor-pointer"
               aria-expanded={mobileMenuOpen}
               aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
             >
-              {mobileMenuOpen ? <IconClose className="h-5 w-5" /> : <IconMenu className="h-5 w-5" />}
+              {mobileMenuOpen ? <IconClose className="h-4 w-4" /> : <IconMenu className="h-4 w-4" />}
             </button>
           </div>
-        </div>
+        </header>
 
         {/* Mobile Slide-down Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden border-t border-[var(--line)] bg-[var(--card)] px-4 py-4 space-y-3 shadow-md">
+          <div className="md:hidden mt-2 rounded-3xl border border-[var(--line-strong)] bg-white/95 dark:bg-[#281F30]/95 backdrop-blur-md p-4 space-y-2 shadow-xl">
             <button
               type="button"
               onClick={() => scrollToSection("features")}
-              className="block w-full text-left py-2 text-sm font-medium text-[var(--ink)] hover:text-[var(--plum)]"
+              className="flex items-center gap-2.5 w-full text-left py-2 px-3 rounded-xl text-sm font-semibold text-[var(--ink)] hover:bg-[var(--card-subtle)]"
             >
-              {t("landing", "navFeatures")}
+              <IconSparkles className="h-4 w-4 text-[var(--plum)]" />
+              <span>{t("landing", "navFeatures")}</span>
             </button>
             <button
               type="button"
               onClick={() => scrollToSection("wellness")}
-              className="block w-full text-left py-2 text-sm font-medium text-[var(--ink)] hover:text-[var(--plum)]"
+              className="flex items-center gap-2.5 w-full text-left py-2 px-3 rounded-xl text-sm font-semibold text-[var(--ink)] hover:bg-[var(--card-subtle)]"
             >
-              {t("landing", "navWellness")}
+              <IconLotus className="h-4 w-4 text-[#3F6344]" />
+              <span>{t("landing", "navWellness")}</span>
             </button>
             <button
               type="button"
               onClick={() => scrollToSection("privacy")}
-              className="block w-full text-left py-2 text-sm font-medium text-[var(--ink)] hover:text-[var(--plum)]"
+              className="flex items-center gap-2.5 w-full text-left py-2 px-3 rounded-xl text-sm font-semibold text-[var(--ink)] hover:bg-[var(--card-subtle)]"
             >
-              {t("landing", "navPrivacy")}
+              <IconShield className="h-4 w-4 text-[#3F6344]" />
+              <span>{t("landing", "navPrivacy")}</span>
             </button>
             <button
               type="button"
               onClick={() => scrollToSection("about")}
-              className="block w-full text-left py-2 text-sm font-medium text-[var(--ink)] hover:text-[var(--plum)]"
+              className="flex items-center gap-2.5 w-full text-left py-2 px-3 rounded-xl text-sm font-semibold text-[var(--ink)] hover:bg-[var(--card-subtle)]"
             >
-              {t("landing", "navAbout")}
+              <IconBookOpen className="h-4 w-4 text-[#854D0E]" />
+              <span>{t("landing", "navAbout")}</span>
             </button>
-
             <div className="pt-2 border-t border-[var(--line)]">
               <button
                 type="button"
-                onClick={onOpenApp}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-[#79516F] dark:bg-[#8D5C82] text-white py-3 text-xs font-bold hover:bg-[#633E5A] shadow-xs"
+                onClick={() => onOpenApp("today")}
+                className="w-full inline-flex items-center justify-center gap-2 rounded-2xl bg-[#79516F] dark:bg-[#8D5C82] text-white py-3 text-xs font-bold shadow-xs cursor-pointer"
               >
                 <span>{t("landing", "ctaOpen")}</span>
                 <IconArrowRight className="h-4 w-4" />
@@ -301,44 +407,61 @@ export function LandingPage({ onOpenApp }) {
             </div>
           </div>
         )}
-      </header>
+      </div>
 
-      {/* 2. Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-16 sm:pt-20 sm:pb-24 border-b border-[var(--line)]">
-        {/* Subtle Decorative Ambient Gradient Blooms */}
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[400px] rounded-full bg-gradient-to-b from-[#E9B7C8]/25 via-[#DCEBDD]/20 to-transparent blur-3xl dark:from-[#3D2636]/30 dark:via-[#1E3322]/20"
-        />
+      {/* 2. Spacious Editorial Hero Section with Botanical & Illustrated Woman Artwork */}
+      <section className="relative overflow-hidden pt-6 pb-12 sm:pt-8 sm:pb-16 border-b border-[var(--line)] flex items-center min-h-[560px] lg:min-h-[620px]">
+        {/* Full Atmospheric Background Artwork */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 select-none overflow-hidden">
+          {/* Editorial artwork preserved in its original orientation, positioned so the illustrated woman's face and upper body sit clearly in the open space between the left text and right cycle card */}
+          <img
+            src={heroArtwork}
+            alt=""
+            className="hero-artwork-img opacity-95 dark:opacity-25 transition-opacity"
+          />
 
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            {/* Left Content */}
-            <div className="lg:col-span-7 space-y-6 text-center lg:text-left">
+          {/* Gentle top edge blend for floating header separation */}
+          <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#FBF7F3]/70 to-transparent dark:from-[#1B1522]/80 pointer-events-none" />
+        </div>
+
+        <div className="mx-auto max-w-[1380px] px-4 sm:px-6 lg:px-8 xl:px-12 relative z-10 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+            {/* Left Content Column */}
+            <div className="lg:col-span-7 space-y-5 text-center lg:text-left relative z-20">
               {/* Eyebrow Pill */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--line-strong)] bg-[var(--card)] px-3.5 py-1.5 shadow-2xs">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--line-strong)] bg-white/85 dark:bg-[#281F30]/85 backdrop-blur-sm px-3.5 py-1.5 shadow-2xs">
                 <IconLotus className="h-3.5 w-3.5 text-[var(--plum)] dark:text-[#E8A8BF]" aria-hidden="true" />
                 <span className="text-[11px] font-bold uppercase tracking-widest text-[var(--plum)] dark:text-[#E8A8BF]">
                   {t("landing", "heroEyebrow")}
                 </span>
               </div>
 
-              {/* Main Heading */}
-              <h1 className="font-serif text-3xl sm:text-5xl lg:text-[56px] font-bold text-[var(--ink)] leading-[1.12] tracking-tight">
-                {t("landing", "heroHeading")}
+              {/* Main Headline with refined width and line spacing to prevent awkward wrapping */}
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-[42px] xl:text-[46px] font-bold text-[var(--ink)] leading-[1.16] tracking-tight max-w-lg mx-auto lg:mx-0">
+                {lang === "hi" ? (
+                  <>
+                    अपने चक्र को <span className="italic font-serif text-[#C96886] dark:text-[#E8A8BF]">गहराई से समझें</span>।<br />
+                    स्वयं से अधिक जुड़ाव महसूस करें।
+                  </>
+                ) : (
+                  <>
+                    Understand <span className="italic font-serif text-[#C96886] dark:text-[#E8A8BF]">your cycle</span>.<br />
+                    Feel more in tune with yourself.
+                  </>
+                )}
               </h1>
 
               {/* Supporting Description */}
-              <p className="text-base sm:text-lg text-[var(--muted)] leading-relaxed max-w-xl mx-auto lg:mx-0 font-normal">
+              <p className="text-sm sm:text-base text-[var(--muted)] leading-relaxed max-w-md mx-auto lg:mx-0 font-normal">
                 {t("landing", "heroSubheading")}
               </p>
 
               {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3.5 pt-2">
+              <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3 pt-1">
                 <button
                   type="button"
-                  onClick={onOpenApp}
-                  className="touch-target w-full sm:w-auto inline-flex items-center justify-center gap-2.5 rounded-2xl bg-[#79516F] dark:bg-[#8D5C82] text-white px-7 py-3.5 text-sm font-bold shadow-sm hover:bg-[#633E5A] dark:hover:bg-[#A06B95] transition-all hover:translate-y-[-1px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--plum)]"
+                  onClick={() => onOpenApp("today")}
+                  className="touch-target w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-[#79516F] dark:bg-[#8D5C82] text-white px-6 py-3 text-xs sm:text-sm font-bold shadow-md hover:bg-[#633E5A] dark:hover:bg-[#A06B95] transition-all hover:translate-y-[-1px] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--plum)] cursor-pointer"
                 >
                   <span>{t("landing", "ctaExplore")}</span>
                   <IconArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -347,140 +470,393 @@ export function LandingPage({ onOpenApp }) {
                 <button
                   type="button"
                   onClick={() => scrollToSection("features")}
-                  className="touch-target w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-2xl border border-[var(--line-strong)] bg-[var(--card)] text-[var(--ink)] px-6 py-3.5 text-sm font-semibold hover:bg-[var(--card-subtle)] transition-all focus-visible:outline-2 focus-visible:outline-[var(--plum)]"
+                  className="touch-target w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full border border-[var(--line-strong)] bg-white/85 dark:bg-[#281F30]/85 text-[var(--ink)] px-5 py-3 text-xs sm:text-sm font-semibold hover:bg-[var(--card-subtle)] transition-all focus-visible:outline-2 focus-visible:outline-[var(--plum)] cursor-pointer backdrop-blur-sm"
                 >
                   <span>{t("landing", "ctaFeatures")}</span>
                   <IconChevronDown className="h-4 w-4 text-[var(--muted)]" aria-hidden="true" />
                 </button>
               </div>
 
-              {/* Key Trust Signals */}
-              <div className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-[var(--muted)]">
+              {/* Compact Trust Indicators */}
+              <div className="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3.5 sm:gap-5 text-xs text-[var(--muted)]">
                 <span className="inline-flex items-center gap-1.5 font-medium">
-                  <IconShield className="h-4 w-4 text-[#3F6344] dark:text-[#88C690]" aria-hidden="true" />
-                  <span>100% Local-First Storage</span>
+                  <IconShield className="h-3.5 w-3.5 text-[#3F6344] dark:text-[#88C690]" aria-hidden="true" />
+                  <span>{t("landing", "trustLocal")}</span>
                 </span>
                 <span className="inline-flex items-center gap-1.5 font-medium">
                   <IconLock className="h-3.5 w-3.5 text-[#3F6344] dark:text-[#88C690]" aria-hidden="true" />
-                  <span>No Account Required</span>
+                  <span>{t("landing", "trustNoAccount")}</span>
                 </span>
                 <span className="inline-flex items-center gap-1.5 font-medium">
-                  <IconBookOpen className="h-3.5 w-3.5 text-[var(--plum)]" aria-hidden="true" />
-                  <span>Clinical WHO & ACOG Sources</span>
+                  <IconBookOpen className="h-3.5 w-3.5 text-[var(--plum)] dark:text-[#E8A8BF]" aria-hidden="true" />
+                  <span>{t("landing", "trustClinical")}</span>
                 </span>
               </div>
             </div>
 
-            {/* Right Visual Composition: Interactive Cycle Phases Showcase */}
-            <div className="lg:col-span-5">
-              <div className="relative mx-auto max-w-md rounded-3xl border border-[var(--line-strong)] bg-[var(--card)] p-6 sm:p-7 shadow-md">
-                {/* Header label in card */}
-                <div className="flex items-center justify-between border-b border-[var(--line)] pb-4">
+            {/* Right Column: Floating Compact Cycle Dashboard */}
+            <div className="lg:col-span-5 flex justify-center lg:justify-end relative z-20">
+              <div className="relative w-full max-w-[340px] sm:max-w-[350px] lg:max-w-[355px] rounded-3xl border border-[#DECED9]/80 dark:border-[#543F61]/80 bg-white/95 dark:bg-[#281F30]/95 backdrop-blur-md p-4 sm:p-4.5 shadow-xl shadow-[#292536]/6 transition-all hover:shadow-2xl">
+                {/* Dashboard Card Header */}
+                <div className="flex items-center justify-between border-b border-[var(--line)] pb-2 mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="flex h-2.5 w-2.5 rounded-full bg-[#88C690] animate-pulse" aria-hidden="true" />
-                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--ink)]">
-                      {lang === "hi" ? "चक्र चरण सिमुलेशन" : "Cycle Phases Rhythm"}
+                    <span
+                      className="flex h-2 w-2 rounded-full bg-[#528C5A] ring-3 ring-[#DCEBDD] dark:ring-[#1E3322]"
+                      aria-hidden="true"
+                    />
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[var(--ink)]">
+                      {t("landing", "cycleToday")}
                     </span>
                   </div>
-                  <span className="rounded-full bg-[var(--card-subtle)] border border-[var(--line)] px-2.5 py-0.5 text-[10px] font-semibold text-[var(--muted)]">
-                    {lang === "hi" ? "पूर्वावलोकन" : "Interactive Preview"}
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => onOpenApp("calendar")}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--plum)] dark:text-[#E8A8BF] hover:underline focus-visible:outline-2 focus-visible:outline-[var(--plum)] rounded px-1 py-0.5 cursor-pointer"
+                  >
+                    <span>{t("landing", "viewCalendar")}</span>
+                    <IconCalendar className="h-3 w-3" aria-hidden="true" />
+                  </button>
                 </div>
 
-                {/* Concentric Cycle Wheel Graphic */}
-                <div className="my-6 flex flex-col items-center justify-center">
-                  <div className="relative w-48 h-48 sm:w-52 sm:h-52 flex items-center justify-center">
-                    {/* Outer decorative ring */}
-                    <div className="absolute inset-0 rounded-full border-2 border-dashed border-[var(--line-strong)]" />
-                    
-                    {/* SVG Segmented Arc Indicator */}
-                    <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100" aria-hidden="true">
+                {/* Main Section: Circular Cycle Visualization */}
+                <div className="my-2 flex flex-col items-center justify-center">
+                  <div className="relative w-32 h-32 sm:w-34 sm:h-34 flex items-center justify-center">
+                    <svg
+                      width="132"
+                      height="132"
+                      viewBox="0 0 132 132"
+                      className="w-full h-full overflow-visible select-none transition-transform duration-700 ease-out"
+                      role="img"
+                      aria-label={
+                        hasPeriodRecords && currentCycleDay
+                          ? `${t("landing", "cycleDay")} ${currentCycleDay}`
+                          : t("landing", "cycleStartsHere")
+                      }
+                    >
+                      {/* Outer decorative track */}
                       <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
+                        cx={wheelCenter}
+                        cy={wheelCenter}
+                        r={wheelRadius + 8}
                         fill="none"
                         stroke="currentColor"
-                        strokeWidth="6"
-                        className="text-[var(--card-subtle)]"
+                        strokeWidth="1"
+                        strokeDasharray="2 3"
+                        className="text-[#EFE6EC] dark:text-[#3D2E47] opacity-80"
                       />
+
+                      {/* Inner delicate concentric dial */}
                       <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
+                        cx={wheelCenter}
+                        cy={wheelCenter}
+                        r={wheelRadius - 8}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1"
+                        className="text-[#F2E8F0] dark:text-[#2A1D31] opacity-75"
+                      />
+
+                      {/* Main track base */}
+                      <circle
+                        cx={wheelCenter}
+                        cy={wheelCenter}
+                        r={wheelRadius}
                         fill="none"
                         stroke="currentColor"
                         strokeWidth="7"
-                        strokeDasharray="251.2"
-                        strokeDashoffset={
-                          previewPhase === "menstrual"
-                            ? "188"
-                            : previewPhase === "follicular"
-                            ? "125"
-                            : previewPhase === "ovulation"
-                            ? "90"
-                            : "30"
-                        }
-                        strokeLinecap="round"
-                        className="text-[#79516F] dark:text-[#E8A8BF] transition-all duration-700 ease-out"
+                        className="text-[#F7E3EC]/30 dark:text-[#211928]"
                       />
+
+                      {hasPeriodRecords ? (
+                        <>
+                          {/* Segment 1: Menstrual Phase (Plum) */}
+                          <circle
+                            cx={wheelCenter}
+                            cy={wheelCenter}
+                            r={wheelRadius}
+                            fill="none"
+                            stroke="#79516F"
+                            strokeWidth={currentPhase?.id === "menstrual" ? "9" : "7"}
+                            strokeDasharray={`${menstrualArc - 2} ${wheelCircumference}`}
+                            strokeDashoffset={0}
+                            transform={`rotate(-90 ${wheelCenter} ${wheelCenter})`}
+                            strokeLinecap="round"
+                            className="transition-all duration-500"
+                          />
+
+                          {/* Segment 2: Follicular Phase (Sage) */}
+                          <circle
+                            cx={wheelCenter}
+                            cy={wheelCenter}
+                            r={wheelRadius}
+                            fill="none"
+                            stroke="#4A7C59"
+                            strokeWidth={currentPhase?.id === "follicular" ? "9" : "7"}
+                            strokeDasharray={`${follicularArc - 2} ${wheelCircumference}`}
+                            strokeDashoffset={`-${menstrualArc}`}
+                            transform={`rotate(-90 ${wheelCenter} ${wheelCenter})`}
+                            strokeLinecap="round"
+                            className="transition-all duration-500"
+                          />
+
+                          {/* Segment 3: Ovulation Window (Rose/Amber) */}
+                          <circle
+                            cx={wheelCenter}
+                            cy={wheelCenter}
+                            r={wheelRadius}
+                            fill="none"
+                            stroke="#E9B7C8"
+                            strokeWidth={currentPhase?.id === "ovulation" ? "9" : "7"}
+                            strokeDasharray={`${ovulationArc - 2} ${wheelCircumference}`}
+                            strokeDashoffset={`-${menstrualArc + follicularArc}`}
+                            transform={`rotate(-90 ${wheelCenter} ${wheelCenter})`}
+                            strokeLinecap="round"
+                            className="transition-all duration-500"
+                          />
+
+                          {/* Segment 4: Luteal Phase (Lavender) */}
+                          <circle
+                            cx={wheelCenter}
+                            cy={wheelCenter}
+                            r={wheelRadius}
+                            fill="none"
+                            stroke="#A37B9C"
+                            strokeWidth={currentPhase?.id === "luteal" ? "9" : "7"}
+                            strokeDasharray={`${lutealArc - 2} ${wheelCircumference}`}
+                            strokeDashoffset={`-${menstrualArc + follicularArc + ovulationArc}`}
+                            transform={`rotate(-90 ${wheelCenter} ${wheelCenter})`}
+                            strokeLinecap="round"
+                            className="transition-all duration-500"
+                          />
+
+                          {/* Pointer Node positioned at current cycle day */}
+                          {currentCycleDay !== null && (
+                            <g className="transition-all duration-700 ease-out">
+                              <circle
+                                cx={pointerX}
+                                cy={pointerY}
+                                r="4.5"
+                                fill="#FFFFFF"
+                                stroke="#79516F"
+                                strokeWidth="2"
+                                className="filter drop-shadow-sm"
+                              />
+                              <circle cx={pointerX} cy={pointerY} r="1.5" fill="#79516F" />
+                            </g>
+                          )}
+                        </>
+                      ) : (
+                        /* Neutral decorative empty-state ring (graceful guide without fabricated progress) */
+                        <>
+                          <circle
+                            cx={wheelCenter}
+                            cy={wheelCenter}
+                            r={wheelRadius}
+                            fill="none"
+                            stroke="#DECED9"
+                            strokeWidth="1.5"
+                            strokeDasharray="3 4"
+                            className="opacity-75"
+                          />
+                          {[0, 90, 180, 270].map((deg) => {
+                            const rad = (deg * Math.PI) / 180;
+                            return (
+                              <circle
+                                key={deg}
+                                cx={wheelCenter + wheelRadius * Math.cos(rad)}
+                                cy={wheelCenter + wheelRadius * Math.sin(rad)}
+                                r="2"
+                                fill="#E9B7C8"
+                              />
+                            );
+                          })}
+                        </>
+                      )}
                     </svg>
 
-                    {/* Center Core */}
-                    <div className="absolute inset-4 rounded-full bg-[var(--card-subtle)] border border-[var(--line)] flex flex-col items-center justify-center text-center p-3 shadow-inner">
-                      <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--muted)]">
-                        {activePhaseData.days}
-                      </span>
-                      <p className="font-serif text-sm sm:text-base font-bold text-[var(--ink)] mt-0.5">
-                        {lang === "hi" ? activePhaseData.nameHi : activePhaseData.nameEn}
-                      </p>
-                      <span className="text-[11px] text-[var(--plum)] font-medium mt-0.5">
-                        {lang === "hi" ? activePhaseData.toneHi : activePhaseData.tone}
-                      </span>
+                    {/* Wheel Center Display */}
+                    <div className="absolute inset-3 sm:inset-3.5 rounded-full bg-[var(--card-subtle)] border border-[var(--line)] flex flex-col items-center justify-center text-center p-2 shadow-2xs">
+                      {hasPeriodRecords && currentCycleDay !== null ? (
+                        currentCycleDay <= 90 ? (
+                          <>
+                            <span className="text-[9px] font-bold uppercase tracking-wider text-[var(--muted)]">
+                              {t("landing", "cycleDay")}
+                            </span>
+                            <span className="font-serif text-2xl font-bold text-[var(--ink)] leading-none my-0.5">
+                              {currentCycleDay}
+                            </span>
+                            <p className="font-semibold text-[10px] text-[var(--ink)] line-clamp-1 leading-tight">
+                              {currentPhase
+                                ? lang === "hi"
+                                  ? currentPhase.nameHi
+                                  : currentPhase.nameEn
+                                : t("landing", "cycleTrackingStarted")}
+                            </p>
+                            <span className="text-[9px] font-medium text-[var(--plum)] dark:text-[#E8A8BF] line-clamp-1 leading-tight">
+                              {currentPhase
+                                ? lang === "hi"
+                                  ? currentPhase.toneHi
+                                  : currentPhase.toneEn
+                                : t("landing", "moreRecordsNeeded")}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="h-6 w-6 rounded-lg bg-[#F7E3EC] dark:bg-[#3D2636] flex items-center justify-center text-[var(--plum)] dark:text-[#E8A8BF] mb-0.5">
+                              <SaheliHiddenHeartSymbol className="h-3.5 w-3.5" />
+                            </div>
+                            <span className="text-[10px] font-bold text-[var(--ink)] leading-tight">
+                              {t("landing", "cycleTrackingStarted")}
+                            </span>
+                            <span className="text-[9px] text-[var(--muted)] leading-tight mt-0.5 max-w-[110px]">
+                              {t("landing", "moreRecordsNeeded")}
+                            </span>
+                          </>
+                        )
+                      ) : (
+                        <>
+                          <div className="h-6 w-6 rounded-lg bg-[#F7E3EC] dark:bg-[#3D2636] flex items-center justify-center text-[var(--plum)] dark:text-[#E8A8BF] mb-0.5">
+                            <SaheliHiddenHeartSymbol className="h-3.5 w-3.5" />
+                          </div>
+                          <span className="font-serif text-xs font-bold text-[var(--ink)] leading-snug">
+                            {t("landing", "cycleAwaits")}
+                          </span>
+                          <span className="text-[10px] text-[var(--muted)] leading-tight mt-0.5 font-medium">
+                            {t("landing", "cycleAwaitsDesc")}
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
 
-                {/* Phase Selection Tabs */}
-                <div className="grid grid-cols-4 gap-1.5 p-1 rounded-2xl bg-[var(--card-subtle)] border border-[var(--line)]">
-                  {cyclePhases.map((phase) => {
-                    const isSelected = previewPhase === phase.id;
-                    return (
-                      <button
-                        key={phase.id}
-                        type="button"
-                        onClick={() => setPreviewPhase(phase.id)}
-                        className={`rounded-xl py-1.5 text-[11px] font-semibold transition-all ${
-                          isSelected
-                            ? "bg-[#79516F] text-white shadow-2xs font-bold dark:bg-[#8D5C82]"
-                            : "text-[var(--muted)] hover:text-[var(--ink)]"
-                        }`}
+                {/* Compact Current-Phase Information Panel OR Graceful Empty State */}
+                {hasPeriodRecords && currentPhase ? (
+                  <div className="rounded-xl p-2.5 border border-[var(--line)] bg-[var(--card-subtle)] space-y-1 transition-all">
+                    <div className="flex items-center justify-between">
+                      <span
+                        className={`inline-block px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wide border ${currentPhase.badgeClass}`}
                       >
-                        {phase.id === "menstrual"
-                          ? lang === "hi" ? "माहवारी" : "Period"
-                          : phase.id === "follicular"
-                          ? lang === "hi" ? "फॉलिक्युलर" : "Follicle"
-                          : phase.id === "ovulation"
-                          ? lang === "hi" ? "ओव्यूलेशन" : "Ovulate"
-                          : lang === "hi" ? "ल्यूटियल" : "Luteal"}
+                        {lang === "hi" ? currentPhase.nameHi : currentPhase.nameEn}
+                      </span>
+                      <span className="text-[10px] font-semibold text-[var(--muted)]">
+                        {currentPhase.days}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-[var(--ink)] leading-relaxed">
+                      {lang === "hi" ? currentPhase.descHi : currentPhase.descEn}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="rounded-2xl p-3 border border-[var(--line)] bg-[var(--card-subtle)] space-y-1.5 text-center">
+                    <h4 className="font-serif text-xs font-bold text-[var(--ink)]">
+                      {t("landing", "cycleStartsHere")}
+                    </h4>
+                    <p className="text-[11px] text-[var(--muted)] leading-relaxed max-w-[270px] mx-auto">
+                      {t("landing", "cycleStartsHereDesc")}
+                    </p>
+                    <div className="pt-0.5">
+                      <button
+                        type="button"
+                        onClick={() => onOpenApp("log", { isFirstPeriod: true })}
+                        className="touch-target inline-flex items-center justify-center gap-2 rounded-full bg-[#79516F] hover:bg-[#633E5A] dark:bg-[#8D5C82] dark:hover:bg-[#A06B95] text-white px-4 py-2 text-xs font-bold shadow-xs transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--plum)] cursor-pointer hover:scale-[1.02]"
+                      >
+                        <span>{t("landing", "logFirstPeriod")}</span>
+                        <IconArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
                       </button>
-                    );
-                  })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Compact Useful Event Rows */}
+                <div className="mt-2.5 space-y-1.5">
+                  {/* Row 1: Estimated Next Period */}
+                  <div className="flex items-center justify-between rounded-xl border border-[var(--line)] bg-[var(--card)] px-3 py-2 text-xs">
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-6 w-6 rounded-lg bg-[#F7E3EC] dark:bg-[#3D2636] flex items-center justify-center text-[var(--plum)] shrink-0">
+                        <IconDroplet className="h-3 w-3" />
+                      </div>
+                      <span className="font-semibold text-[11px] text-[var(--ink)]">
+                        {t("landing", "estimatedPeriod")}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      {cycleAnalysis?.prediction?.available ? (
+                        <>
+                          <span className="font-bold text-xs text-[var(--ink)] block">
+                            {formatFriendlyDate(cycleAnalysis.prediction.estimatedDate, lang)}
+                          </span>
+                          <span className="text-[9px] text-[var(--muted)] block">
+                            ±{cycleAnalysis.prediction.spreadDays}{" "}
+                            {lang === "hi" ? "दिन का दायरा" : "days"}
+                          </span>
+                        </>
+                      ) : periodStarts.length === 1 ? (
+                        <span className="text-[10px] text-[var(--muted)]">
+                          {lang === "hi" ? "अगले चक्र के बाद" : "After 2nd cycle"}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-[var(--muted)]">
+                          {t("landing", "pendingFirstLog")}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Row 2: Estimated Ovulation / Fertile Window */}
+                  <div className="flex items-center justify-between rounded-xl border border-[var(--line)] bg-[var(--card)] px-3 py-2 text-xs">
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-6 w-6 rounded-lg bg-[#FFF8EB] dark:bg-[#2E2412] flex items-center justify-center text-[#854D0E] dark:text-[#FCD34D] shrink-0">
+                        <IconSparkles className="h-3 w-3" />
+                      </div>
+                      <span className="font-semibold text-[11px] text-[var(--ink)]">
+                        {t("landing", "estimatedOvulation")}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      {cycleAnalysis?.ovulationEstimate && !cycleAnalysis?.isIrregular ? (
+                        <>
+                          <span className="font-bold text-xs text-[var(--ink)] block">
+                            {formatFriendlyDate(cycleAnalysis.ovulationEstimate.estimatedDate, lang)}
+                          </span>
+                          <span className="text-[9px] text-[var(--muted)] block">
+                            {formatFriendlyDate(cycleAnalysis.ovulationEstimate.fertileWindowStart, lang)} –{" "}
+                            {formatFriendlyDate(cycleAnalysis.ovulationEstimate.fertileWindowEnd, lang)}
+                          </span>
+                        </>
+                      ) : cycleAnalysis?.isIrregular ? (
+                        <span className="text-[10px] text-[var(--muted)] italic block">
+                          {lang === "hi" ? "अनियमित चक्र" : "Irregular cycle"}
+                        </span>
+                      ) : (
+                        <span className="text-[10px] text-[var(--muted)]">
+                          {t("landing", "pendingRegularLogs")}
+                        </span>
+                      )}
+                    </div>
+                  </div>
                 </div>
 
-                {/* Explanatory description card */}
-                <div className="mt-4 rounded-2xl p-3.5 border text-xs leading-relaxed transition-all duration-300">
-                  <div className={`inline-block px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide border mb-1.5 ${activePhaseData.badgeClass}`}>
-                    {lang === "hi" ? activePhaseData.nameHi : activePhaseData.nameEn}
+                {/* Compact Softly Tinted Wellness Tip Panel */}
+                <div className="mt-2.5 rounded-xl border border-[#DECED9]/50 dark:border-[#543F61]/50 bg-[#FAF5F0] dark:bg-[#211928] p-2.5 space-y-1 text-xs">
+                  <div className="flex items-center gap-1.5 font-bold text-[11px] text-[var(--ink)]">
+                    <IconSparkles className="h-3 w-3 text-[var(--plum)] dark:text-[#E8A8BF]" aria-hidden="true" />
+                    <span>{t("landing", "wellnessTipTitle")}</span>
                   </div>
-                  <p className="text-[var(--ink)]">
-                    {lang === "hi" ? activePhaseData.descHi : activePhaseData.descEn}
+                  <p className="text-[11px] text-[var(--muted)] leading-relaxed">
+                    {currentPhase
+                      ? lang === "hi"
+                        ? currentPhase.tipHi
+                        : currentPhase.tipEn
+                      : lang === "hi"
+                      ? "दैनिक लय: नींद, ऊर्जा और मनोदशा जैसी छोटी बातों को दर्ज करने से आपको अपने शरीर की स्वाभाविक लय समझने में मदद मिलती है।"
+                      : "Tracking everyday cues like sleep, energy, and mood helps uncover your body's natural rhythm."}
                   </p>
                 </div>
 
-                {/* Sample Note */}
-                <p className="mt-3 text-[10px] text-center text-[var(--muted)]">
-                  {t("landing", "heroSampleNote")}
+                {/* Readable Medical Estimate Disclaimer */}
+                <p className="mt-2 text-[10px] text-center text-[var(--muted)] leading-normal">
+                  {t("landing", "estimateDisclaimer")}
                 </p>
               </div>
             </div>
@@ -777,7 +1153,7 @@ export function LandingPage({ onOpenApp }) {
       <section className="py-20 sm:py-28 relative overflow-hidden text-center">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 relative z-10 space-y-6">
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F7E3EC] dark:bg-[#3D2636] border border-[#E9B7C8]/50 text-[var(--plum)] shadow-2xs mx-auto">
-            <IconLotus className="h-6 w-6" />
+            <SaheliHiddenHeartSymbol className="h-7 w-7" />
           </div>
 
           <h2 className="font-serif text-3xl sm:text-5xl font-bold text-[var(--ink)] tracking-tight">
@@ -791,8 +1167,8 @@ export function LandingPage({ onOpenApp }) {
           <div className="pt-2">
             <button
               type="button"
-              onClick={onOpenApp}
-              className="touch-target inline-flex items-center gap-2.5 rounded-2xl bg-[#79516F] dark:bg-[#8D5C82] text-white px-8 py-4 text-base font-bold shadow-md hover:bg-[#633E5A] dark:hover:bg-[#A06B95] transition-all hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--plum)] cursor-pointer"
+              onClick={() => onOpenApp("today")}
+              className="touch-target inline-flex items-center gap-2.5 rounded-full bg-[#79516F] dark:bg-[#8D5C82] text-white px-8 py-4 text-base font-bold shadow-md hover:bg-[#633E5A] dark:hover:bg-[#A06B95] transition-all hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--plum)] cursor-pointer"
             >
               <span>{t("landing", "ctaOpen")}</span>
               <IconArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -805,38 +1181,34 @@ export function LandingPage({ onOpenApp }) {
       <footer id="about" className="border-t border-[var(--line)] bg-[var(--card-subtle)] py-12 text-xs text-[var(--muted)]">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 space-y-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-b border-[var(--line)] pb-8">
-            <div className="flex items-center gap-2.5">
-              <IconLotus className="h-5 w-5 text-[var(--plum)]" aria-hidden="true" />
-              <span className="font-serif text-2xl font-bold text-[var(--ink)]">saheli</span>
-              <span className="text-xs text-[var(--muted)]">· {t("landing", "brandTagline")}</span>
-            </div>
+            <SaheliLogo variant="horizontal" showTagline={true} />
 
             <div className="flex flex-wrap items-center gap-5 text-xs font-medium">
               <button
                 type="button"
-                onClick={onOpenApp}
-                className="text-[var(--plum)] font-bold hover:underline"
+                onClick={() => onOpenApp("today")}
+                className="text-[var(--plum)] font-bold hover:underline cursor-pointer"
               >
                 {t("landing", "ctaOpen")}
               </button>
               <button
                 type="button"
                 onClick={() => scrollToSection("features")}
-                className="hover:text-[var(--ink)]"
+                className="hover:text-[var(--ink)] cursor-pointer"
               >
                 {t("landing", "navFeatures")}
               </button>
               <button
                 type="button"
                 onClick={() => scrollToSection("wellness")}
-                className="hover:text-[var(--ink)]"
+                className="hover:text-[var(--ink)] cursor-pointer"
               >
                 {t("landing", "navWellness")}
               </button>
               <button
                 type="button"
                 onClick={() => scrollToSection("privacy")}
-                className="hover:text-[var(--ink)]"
+                className="hover:text-[var(--ink)] cursor-pointer"
               >
                 {t("landing", "navPrivacy")}
               </button>

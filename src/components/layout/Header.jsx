@@ -1,7 +1,7 @@
 import { useAppData } from "../../context/useAppData.js";
 import { useTranslation } from "../../hooks/useTranslation.js";
 import {
-  IconLotus,
+  IconSaheliHeart,
   IconLeaf,
   IconLock,
   IconSettingsGear,
@@ -22,12 +22,12 @@ export function Header({ onOpenSettings, onNavigateToLanding }) {
   return (
     <header className="border-b border-[var(--line)] bg-[var(--card)]/95 backdrop-blur-md sticky top-0 z-40 transition-colors">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-2.5 sm:px-6 sm:py-3">
-        {/* Brand area — Saheli wordmark as visual anchor with botanical emblem and navigation back to landing */}
+        {/* Brand area — Saheli wordmark as visual anchor with hidden-heart emblem and navigation back to landing */}
         <div className="flex flex-col min-w-0">
           <button
             type="button"
             onClick={onNavigateToLanding}
-            className="group flex items-center gap-2 text-left rounded-lg p-0.5 -ml-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--plum)]"
+            className="group flex items-center gap-2 text-left rounded-lg p-0.5 -ml-0.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--plum)] cursor-pointer"
             aria-label={lang === "hi" ? "सहेली होम / अवलोकन पर जाएं" : "Saheli - Return to Overview"}
             title={lang === "hi" ? "होम / लैंडिंग पेज पर जाएं" : "Go to Landing Page / Overview"}
           >
@@ -37,7 +37,7 @@ export function Header({ onOpenSettings, onNavigateToLanding }) {
             {isDiscreet ? (
               <IconLeaf className="h-4.5 w-4.5 text-[var(--plum)] stroke-[1.6] shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
             ) : (
-              <IconLotus className="h-4.5 w-4.5 text-[var(--plum)] stroke-[1.6] shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
+              <IconSaheliHeart className="h-4.5 w-4.5 text-[var(--plum)] stroke-[1.6] shrink-0 group-hover:scale-110 transition-transform" aria-hidden="true" />
             )}
           </button>
 
